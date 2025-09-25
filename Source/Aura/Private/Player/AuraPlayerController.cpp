@@ -24,9 +24,11 @@ void AAuraPlayerController::BeginPlay()
 
 	//从本地角色身上获取到它的子系统
 	UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer());
-	check(Subsystem); //检查子系统是否存在
-	Subsystem->AddMappingContext(CharacterContext, 0); //可以存在多个操作映射，根据优先级触发
-
+	/*只有在本地控制的机器并且具有有效的local player时,subsystem才会有效 所以不用check*/
+	if (Subsystem)	//检查子系统是否存在
+	{
+		Subsystem->AddMappingContext(CharacterContext, 0); //可以存在多个操作映射，根据优先级触发
+	}
 	bShowMouseCursor = true; //游戏中是否显示鼠标光标
 	DefaultMouseCursor = EMouseCursor::Default; //鼠标光标的样式
 
