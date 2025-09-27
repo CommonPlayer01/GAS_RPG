@@ -80,4 +80,8 @@ protected:
 
 	//用于存储当前已经激活的GameplayEffect的句柄的map
 	TMap<FActiveGameplayEffectHandle, UAbilitySystemComponent*> ActiveEffectHandles;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Apply Effects")
+	float ActorLevel = 1.f;
+
 };
