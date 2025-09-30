@@ -4,6 +4,7 @@
 #include "Character/AuraCharacter.h"
 
 #include "AbilitySystemComponent.h"
+#include "AbilitySystem/AuraAbilitySystemComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Player/AuraPlayerController.h"
 #include "Player/AuraPlayerState.h"
@@ -45,6 +46,7 @@ void AAuraCharacter::InitAbilityActorInfo()
 	check(PlayerStateBase);
 	//从playerState获取ASC和AS
 	AbilitySystemComponent = PlayerStateBase->GetAbilitySystemComponent();
+	Cast<UAuraAbilitySystemComponent>(AbilitySystemComponent)->AbilityActorInfoSet();
 	AttributeSet = PlayerStateBase->GetAttributeSet();
 	//初始化ASC
 	AbilitySystemComponent->InitAbilityActorInfo(PlayerStateBase, this);

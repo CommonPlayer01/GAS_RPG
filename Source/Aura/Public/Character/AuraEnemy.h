@@ -23,5 +23,5 @@ public:
 	bool bHighlighted = false; //是否高亮
 protected:
 	virtual void BeginPlay() override;
-	
+	virtual void InitAbilityActorInfo() override;
 };
