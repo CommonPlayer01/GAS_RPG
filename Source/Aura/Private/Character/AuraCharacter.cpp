@@ -40,6 +40,14 @@ void AAuraCharacter::OnRep_PlayerState()
 	InitAbilityActorInfo();
 }
 
+int32 AAuraCharacter::GetPlayerLevel()
+{
+	const AAuraPlayerState* PlayerStateBase = GetPlayerState<AAuraPlayerState>();
+	check(PlayerStateBase); //检测是否有效，无效会暂停游戏
+	return PlayerStateBase->GetPlayerLevel();
+
+}
+
 void AAuraCharacter::InitAbilityActorInfo()
 {
 	AAuraPlayerState* PlayerStateBase = GetPlayerState<AAuraPlayerState>();
@@ -60,4 +68,6 @@ void AAuraCharacter::InitAbilityActorInfo()
 		}
 	}
 
+	//通过GE初始角色主要属性
+	InitializeDefaultAttributes();
 }

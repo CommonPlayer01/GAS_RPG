@@ -17,6 +17,12 @@ public:
 	AAuraCharacter();
 	virtual void PossessedBy(AController* NewController) override; //服务器初始化ASC
 	virtual void OnRep_PlayerState() override; //客户端初始化ASC
-	private:
+
+	/* ICombatInterface战斗接口 */
+	virtual int32 GetPlayerLevel() override;
+	/* ICombatInterface战斗接口 结束 */
+
+	
+private:
 	virtual void InitAbilityActorInfo() override;
 };

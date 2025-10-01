@@ -34,6 +34,6 @@ private:
 	void Move(const struct FInputActionValue& InputActionValue);
 
 	void CursorTrace(); //鼠标位置追踪拾取
-	TObjectPtr<IEnemyInterface> LastActor; //上一帧拾取到的接口指针
-	TObjectPtr<IEnemyInterface> ThisActor; //这一帧拾取到的接口指针
+	IEnemyInterface* LastActor; //上一帧拾取到的接口指针
+	IEnemyInterface* ThisActor; //这一帧拾取到的接口指针
 };
