@@ -13,6 +13,12 @@ void UAuraWidgetController::SetWidgetControllerParams(const FWidgetControllerPar
 
 void UAuraWidgetController::BroadcastInitialValues()
 {
+	GEngine->AddOnScreenDebugMessage(
+		-1,
+		10.f,
+		FColor::Blue,
+		FString::Printf(TEXT("UAuraWidgetController::BroadcastInitialValues()"))
+		);
 }
 
 void UAuraWidgetController::BindCallbacksToDependencies()
