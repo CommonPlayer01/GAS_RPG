@@ -28,6 +28,7 @@ void AAuraCharacter::PossessedBy(AController* NewController)
 	Super::PossessedBy(NewController);
 	//初始化ASC的OwnerActor和AvatarActor
 	InitAbilityActorInfo();
+	AddCharacterAbilities();
 
 	//设置OwnerActor的Controller
 	SetOwner(NewController);
