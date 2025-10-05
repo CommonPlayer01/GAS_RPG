@@ -8,6 +8,7 @@
 #include "AuraPlayerController.generated.h"
 
 
+class USplineComponent;
 struct FGameplayTag;
 class UAuraInputConfig;
 class UInputMappingContext;
@@ -42,9 +43,9 @@ private:
 	IEnemyInterface* ThisActor; //这一帧拾取到的接口指针
 
 
-	void AbilityInputTagPressed(FGameplayTag InputTag);
-	void AbilityInputTagReleased(FGameplayTag InputTag);
-	void AbilityInputTagHold(FGameplayTag InputTag);
+	void AbilityInputTagPressed(const FGameplayTag InputTag);
+	void AbilityInputTagReleased(const FGameplayTag InputTag);
+	void AbilityInputTagHold(const FGameplayTag InputTag);
 
 
 	UPROPERTY(EditDefaultsOnly, Category="Input")
@@ -54,5 +55,20 @@ private:
 	TObjectPtr<UAuraAbilitySystemComponent> AuraAbilitySystemComponent;
 	
 	UAuraAbilitySystemComponent* GetASC();
+
+	FVector CachedDestination = FVector::ZeroVector; //存储鼠标点击的位置
+	float FollowTime = 0.f; // 用于查看按住了多久
+	bool bAutoRunning = false; //当前是否自动移动
+	bool bTargeting = false; //当前鼠标是否选中敌人
+
+	UPROPERTY(EditDefaultsOnly)
+	float ShortPressThreshold = 0.3f; //定义鼠标悬停多长时间内算点击事件
+
+	UPROPERTY(EditDefaultsOnly)
+	float AutoRunAcceptanceRadius = 50.f; //当角色和目标距离在此半径内时，将关闭自动寻路
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<USplineComponent> Spline; //自动寻路时生成的样条线
+
 
 };
