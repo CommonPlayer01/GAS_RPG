@@ -22,10 +22,52 @@ AAuraPlayerController::AAuraPlayerController()
 
 }
 
+
+
 void AAuraPlayerController::PlayerTick(float DeltaTime)
 {
 	Super::PlayerTick(DeltaTime);
 	CursorTrace();
+
+	AutoRun();
+
+}
+void AAuraPlayerController::AutoRun()
+{
+	if (!bAutoRunning) return;
+	// 尝试获取当前由该控制器（Controller）所控制的 Pawn（通常是角色）
+	if (APawn* ControlledPawn = GetPawn())
+	{
+		// 1. 找到角色当前位置在样条（Spline）上最近的点（世界坐标）
+		//    Spline 是一个 USplineComponent 指针，通常在类中预先定义并绑定到场景中的样条组件
+		const FVector LocationOnSpline = Spline->FindLocationClosestToWorldLocation(
+			ControlledPawn->GetActorLocation(),  // 当前 Pawn 的世界位置
+			ESplineCoordinateSpace::World        // 使用世界空间
+		);
+
+		// 2. 获取样条在该最近点处的切线方向（即样条前进方向），同样在世界坐标系中
+		//    这个方向向量是单位向量（已归一化），表示角色应朝哪个方向移动
+		const FVector Direction = Spline->FindDirectionClosestToWorldLocation(
+			LocationOnSpline,                    // 样条上的点
+			ESplineCoordinateSpace::World        // 世界空间
+		);
+
+		// 3. 向 Pawn 的移动组件（如 CharacterMovementComponent）添加移动输入
+		//    AddMovementInput(Direction) 会让角色朝 Direction 方向移动（基于当前移动速度）
+		//    注意：这依赖于 Pawn 是 ACharacter 或具有支持 AddMovementInput 的移动组件
+		ControlledPawn->AddMovementInput(Direction);
+
+		// 4. 计算当前样条上最近点与目标终点（CachedDestination）之间的距离
+		//    CachedDestination 通常是在开始自动运行时缓存的目标位置（例如玩家点击的地面位置）
+		const float DistanceToDestination = (LocationOnSpline - CachedDestination).Length();
+
+		// 5. 如果角色已经足够接近目标点（在允许的误差半径内）
+		if (DistanceToDestination <= AutoRunAcceptanceRadius)
+		{
+			// 停止自动运行：设置标志位为 false，通常会停止后续的自动移动逻辑
+			bAutoRunning = false;
+		}
+	}
 }
 
 void AAuraPlayerController::BeginPlay()
@@ -80,7 +122,7 @@ void AAuraPlayerController::Move(const FInputActionValue& InputActionValue)
 void AAuraPlayerController::CursorTrace()
 //鼠标位置追踪
 {
-	FHitResult CursorHit;
+
 	GetHitResultUnderCursor(ECC_Visibility, false, CursorHit); //获取可视的鼠标命中结果
 	if(!CursorHit.bBlockingHit) return; //如果未命中直接返回
 
@@ -95,31 +137,11 @@ void AAuraPlayerController::CursorTrace()
 	 * 4. LastActor is valid   ThisActor is valid LastActor ！= ThisActor 取消高亮LastActor 高亮ThisActor
 	 * 5. LastActor is valid   ThisActor is valid LastActor == ThisActor 不需要任何操作
 	 */
-
-	if(LastActor == nullptr)
+	
+	if(ThisActor != LastActor)
 	{
-		if(ThisActor != nullptr)
-		{
-			//case 2
-			ThisActor->HighlightActor();
-		} // else case 1
-	}
-	else
-	{
-		if(ThisActor == nullptr)
-		{
-			//case 3
-			LastActor->UnHighlightActor();
-		}
-		else
-		{
-			if(LastActor != ThisActor)
-			{
-				//case 4
-				LastActor->UnHighlightActor();
-				ThisActor->HighlightActor();
-			} //else case 5
-		}
+		if(ThisActor) ThisActor->HighlightActor();
+		if(LastActor) LastActor->UnHighlightActor();
 	}
 }
 
@@ -164,6 +186,8 @@ void AAuraPlayerController::AbilityInputTagReleased(const FGameplayTag InputTag)
 					Spline->AddSplinePoint(PointLoc, ESplineCoordinateSpace::World); //将新的位置添加到样条曲线中
 					DrawDebugSphere(GetWorld(), PointLoc, 8.f, 8, FColor::Orange, false, 5.f); //点击后debug调试
 				}
+				//自动寻路将最终目的地设置为导航的终点，方便停止导航
+				CachedDestination = NavPath->PathPoints[NavPath->PathPoints.Num() - 1];
 				bAutoRunning = true; //设置当前正常自动寻路状态，将在tick中更新位置
 			}
 		}
@@ -190,11 +214,11 @@ void AAuraPlayerController::AbilityInputTagHold(const  FGameplayTag InputTag)
 	else
 	{
 		FollowTime += GetWorld()->GetDeltaSeconds(); //统计悬停时间来判断是否为点击
-		FHitResult HitResult;
 
-		if (GetHitResultUnderCursor(ECC_Visibility, false, HitResult))
-		// if(CursorHit.bBlockingHit)
-		CachedDestination = HitResult.ImpactPoint; //获取鼠标拾取位置
+		if(CursorHit.bBlockingHit)
+		{
+			CachedDestination = CursorHit.ImpactPoint; //获取鼠标拾取位置
+		}
 
 		if(APawn* ControlledPawn = GetPawn())
 		{

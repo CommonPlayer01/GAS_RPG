@@ -39,6 +39,7 @@ private:
 	void Move(const struct FInputActionValue& InputActionValue);
 
 	void CursorTrace(); //鼠标位置追踪拾取
+	FHitResult CursorHit;
 	IEnemyInterface* LastActor; //上一帧拾取到的接口指针
 	IEnemyInterface* ThisActor; //这一帧拾取到的接口指针
 
@@ -70,5 +71,7 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<USplineComponent> Spline; //自动寻路时生成的样条线
 
+	void AutoRun();
+	
 
 };

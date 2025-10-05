@@ -8,7 +8,7 @@
 
 void UAuraAbilitySystemComponent::AbilityActorInfoSet()
 {
-	OnGameplayEffectAppliedDelegateToSelf.AddUObject(this, &UAuraAbilitySystemComponent::EffectApplied);
+	OnGameplayEffectAppliedDelegateToSelf.AddUObject(this, &UAuraAbilitySystemComponent::ClientEffectApplied);
 	//测试
 	const FAuraGameplayTags& GameplayTags = FAuraGameplayTags::Get();
 	//GameplayTags.Attributes_Secondary_Armor.ToString() //标签的文本
@@ -93,13 +93,22 @@ void UAuraAbilitySystemComponent::AbilityInputTagReleased(const FGameplayTag& In
 	}
 }
 
-
-void UAuraAbilitySystemComponent::EffectApplied(UAbilitySystemComponent* AbilitySystemComponent,
-                                                const FGameplayEffectSpec& EffectSpec, FActiveGameplayEffectHandle ActiveGameplayEffectHandle)
+void UAuraAbilitySystemComponent::ClientEffectApplied_Implementation(UAbilitySystemComponent* AbilitySystemComponent,
+	const FGameplayEffectSpec& EffectSpec, FActiveGameplayEffectHandle ActiveGameplayEffectHandle)
 {
-	// GEngine->AddOnScreenDebugMessage(1, 8.f, FColor::Blue, FString("Effect Applied!"));
-	FGameplayTagContainer TagContainer;
-	EffectSpec.GetAllAssetTags(TagContainer);
-
-	EffectAssetTags.Broadcast(TagContainer);
+		// GEngine->AddOnScreenDebugMessage(1, 8.f, FColor::Blue, FString("Effect Applied!"));
+		FGameplayTagContainer TagContainer;
+		EffectSpec.GetAllAssetTags(TagContainer);
+	
+		EffectAssetTags.Broadcast(TagContainer);
 }
+
+
+// void UAuraAbilitySystemComponent::ClientEffectApplied_Implementation (UAbilitySystemComponent* AbilitySystemComponent, const FGameplayEffectSpec& EffectSpec, FActiveGameplayEffectHandle ActiveGameplayEffectHandle)
+// {
+// 	// GEngine->AddOnScreenDebugMessage(1, 8.f, FColor::Blue, FString("Effect Applied!"));
+// 	FGameplayTagContainer TagContainer;
+// 	EffectSpec.GetAllAssetTags(TagContainer);
+//
+// 	EffectAssetTags.Broadcast(TagContainer);
+// }
