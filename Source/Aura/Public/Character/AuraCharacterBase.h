@@ -55,6 +55,13 @@ protected:
 
 
 	void AddCharacterAbilities() const;
+
+
+	UPROPERTY(EditAnywhere, Category = "Combat")
+	FName WeaponTipSocketName;
+
+	virtual FVector GetCombatSocketLocation() override;
+
 private:
 
 	UPROPERTY(EditAnywhere, Category="Attributes")

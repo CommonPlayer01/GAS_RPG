@@ -22,14 +22,28 @@ void UAuraAbilitySystemComponent::AbilityActorInfoSet()
 
 void UAuraAbilitySystemComponent::AddCharacterAbilities(const TArray<TSubclassOf<UGameplayAbility>>& StartupAbilities)
 {
-	for(const TSubclassOf<UGameplayAbility> AbilityClass : StartupAbilities)
+	// 遍历预定义的启动技能类数组（StartupAbilities）
+	// StartupAbilities 是一个 TArray<TSubclassOf<UGameplayAbility>>，通常在角色蓝图或数据配置中设置
+	for (const TSubclassOf<UGameplayAbility> AbilityClass : StartupAbilities)
 	{
+		// 创建一个 GameplayAbilitySpec 实例//   - AbilityClass：要授予的技能类//   - Level = 1：技能等级（Aura 中通常默认为 1，可用于后续扩展如升级）
+		// 此时 AbilitySpec.Ability 会通过 GAS 内部机制实例化为该类的对象（但尚未激活）
 		FGameplayAbilitySpec AbilitySpec = FGameplayAbilitySpec(AbilityClass, 1);
-		if(const UAuraGameplayAbility* AbilityBase = Cast<UAuraGameplayAbility>(AbilitySpec.Ability))
+
+		// 尝试将实例化的技能对象（AbilitySpec.Ability）转换为 UAuraGameplayAbility 类型
+		// UAuraGameplayAbility 是项目中自定义的基类，用于统一管理技能行为和属性
+		if (const UAuraGameplayAbility* AbilityBase = Cast<UAuraGameplayAbility>(AbilitySpec.Ability))
 		{
+			// 将该技能的 StartupInputTag 添加到 AbilitySpec 的动态来源标签集合中
+			// StartupInputTag 是 UAuraGameplayAbility 中定义的一个 FGameplayTag 成员
+			// GetDynamicSpecSourceTags() 返回的是可修改的 FGameplayTagContainer 引用
 			AbilitySpec.GetDynamicSpecSourceTags().AddTag(AbilityBase->StartupInputTag);
-			GiveAbility(AbilitySpec); //只应用不激活
-			// GiveAbilityAndActivateOnce(AbilitySpec); //应用技能并激活一次
+
+			// GiveAbility() 仅注册技能，不会立即激活它,将该技能授予给当前的 AbilitySystemComponent（即角色）,技能将在后续输入触发（如 AbilityInputTagHold）时被激活
+			GiveAbility(AbilitySpec);
+
+			// 注释掉的代码：GiveAbilityAndActivateOnce(AbilitySpec)
+			// 如果取消注释，会在授予技能的同时立即激活一次（适用于被动触发或开场技能）
 		}
 	}
 }
@@ -41,7 +55,6 @@ void UAuraAbilitySystemComponent::AddCharacterAbilities(const TArray<TSubclassOf
 void UAuraAbilitySystemComponent::AbilityInputTagHold(const FGameplayTag& InputTag)
 {
 	// 检查传入的 InputTag 是否有效（非空且已注册到 GameplayTag 注册表）
-	// 若无效，直接退出函数，避免无效操作
 	if(!InputTag.IsValid()) return;
 
 	// 遍历所有当前可激活的技能（Abilities）
