@@ -5,8 +5,10 @@
 #include "CoreMinimal.h"
 #include "Character/AuraCharacterBase.h"
 #include "Interaction/EnemyInterface.h"
+#include "UI/WidgetController/OverlayWidgetController.h"
 #include "AuraEnemy.generated.h"
 
+class UWidgetComponent;
 /**
  * 
  */
@@ -26,6 +28,13 @@ public:
 	/* ICombatInterface战斗接口 结束 */
 
 
+	UPROPERTY(BlueprintAssignable)
+	FOnAttributeChangedSignature OnHealthChanged;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnAttributeChangedSignature OnMaxHealthChanged;
+
+	
 	UPROPERTY(BlueprintReadOnly) //蓝图可读
 	bool bHighlighted = false; //是否高亮
 protected:
@@ -34,4 +43,8 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character Class Defaults")
 	int32 Level;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Widget")
+	TObjectPtr<UWidgetComponent> HealthBar;
+
 };

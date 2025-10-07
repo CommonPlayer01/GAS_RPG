@@ -21,8 +21,26 @@ AAuraPlayerController::AAuraPlayerController()
 	Spline = CreateDefaultSubobject<USplineComponent>("Spline");
 
 }
+void AAuraPlayerController::BeginPlay()
+{
+	Super::BeginPlay();
+	check(CharacterContext); //判断是否存在
 
+	//从本地角色身上获取到它的子系统
+	UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer());
+	/*只有在本地控制的机器并且具有有效的local player时,subsystem才会有效 所以不用check*/
+	if (Subsystem)	//检查子系统是否存在
+	{
+		Subsystem->AddMappingContext(CharacterContext, 0); //可以存在多个操作映射，根据优先级触发
+	}
+	bShowMouseCursor = true; //游戏中是否显示鼠标光标
+	DefaultMouseCursor = EMouseCursor::Default; //鼠标光标的样式
 
+	FInputModeGameAndUI InputModeData;
+	InputModeData.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock); //将鼠标锁定在视口内
+	InputModeData.SetHideCursorDuringCapture(false); //鼠标被捕获时是否隐藏
+	SetInputMode(InputModeData); //设置给控制器
+}
 
 void AAuraPlayerController::PlayerTick(float DeltaTime)
 {
@@ -70,26 +88,7 @@ void AAuraPlayerController::AutoRun()
 	}
 }
 
-void AAuraPlayerController::BeginPlay()
-{
-	Super::BeginPlay();
-	check(CharacterContext); //判断是否存在
 
-	//从本地角色身上获取到它的子系统
-	UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer());
-	/*只有在本地控制的机器并且具有有效的local player时,subsystem才会有效 所以不用check*/
-	if (Subsystem)	//检查子系统是否存在
-	{
-		Subsystem->AddMappingContext(CharacterContext, 0); //可以存在多个操作映射，根据优先级触发
-	}
-	bShowMouseCursor = true; //游戏中是否显示鼠标光标
-	DefaultMouseCursor = EMouseCursor::Default; //鼠标光标的样式
-
-	FInputModeGameAndUI InputModeData;
-	InputModeData.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock); //将鼠标锁定在视口内
-	InputModeData.SetHideCursorDuringCapture(false); //鼠标被捕获时是否隐藏
-	SetInputMode(InputModeData); //设置给控制器
-}
 
 void AAuraPlayerController::SetupInputComponent()
 {
@@ -99,6 +98,10 @@ void AAuraPlayerController::SetupInputComponent()
 
 	AuraInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AAuraPlayerController::Move); //绑定移动事件
 
+	//绑定Shift按键事件
+	AuraInputComponent->BindAction(ShiftAction, ETriggerEvent::Started, this, &ThisClass::ShiftPressed);
+	AuraInputComponent->BindAction(ShiftAction, ETriggerEvent::Completed, this, &ThisClass::ShiftReleased);
+	
 	AuraInputComponent->BindAbilityAction(InputConfig, this, &ThisClass::AbilityInputTagPressed, &ThisClass::AbilityInputTagReleased, &ThisClass::AbilityInputTagHold);
 
 }
@@ -168,11 +171,9 @@ void AAuraPlayerController::AbilityInputTagReleased(const FGameplayTag InputTag)
 		}
 		return;
 	}
-
-	if(bTargeting)
-	{
-		if(GetASC()) GetASC()->AbilityInputTagReleased(InputTag);
-	}else
+	if(GetASC()) GetASC()->AbilityInputTagReleased(InputTag);
+	
+	if(!bTargeting && !bShiftKeyDown)
 	{
 		APawn* ControlledPawn = GetPawn();
 		if(FollowTime <= ShortPressThreshold)
@@ -186,6 +187,7 @@ void AAuraPlayerController::AbilityInputTagReleased(const FGameplayTag InputTag)
 					Spline->AddSplinePoint(PointLoc, ESplineCoordinateSpace::World); //将新的位置添加到样条曲线中
 					DrawDebugSphere(GetWorld(), PointLoc, 8.f, 8, FColor::Orange, false, 5.f); //点击后debug调试
 				}
+				if (NavPath->PathPoints.Num() == 0) return;
 				//自动寻路将最终目的地设置为导航的终点，方便停止导航
 				CachedDestination = NavPath->PathPoints[NavPath->PathPoints.Num() - 1];
 				bAutoRunning = true; //设置当前正常自动寻路状态，将在tick中更新位置
@@ -207,7 +209,7 @@ void AAuraPlayerController::AbilityInputTagHold(const  FGameplayTag InputTag)
 		return;
 	}
 
-	if(bTargeting)
+	if(bTargeting || bShiftKeyDown)
 	{
 		if(GetASC()) GetASC()->AbilityInputTagHold(InputTag);
 	}
