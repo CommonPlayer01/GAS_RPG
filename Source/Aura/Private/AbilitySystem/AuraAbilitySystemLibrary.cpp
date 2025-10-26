@@ -49,31 +49,59 @@ UAttributeMenuWidgetController* UAuraAbilitySystemLibrary::GetAttributeMenuWidge
 void UAuraAbilitySystemLibrary::InitializeDefaultAttributes(const UObject* WorldContextObject,
 	ECharacterClass CharacterClass, float Level, UAbilitySystemComponent* ASC)
 {
-	//获取到当前关卡的GameMode实例
-	const AAuraGameModeBase* GameMode = Cast<AAuraGameModeBase>(UGameplayStatics::GetGameMode(WorldContextObject));
-	if(GameMode == nullptr) return;
+	AActor* AvatorActor = ASC->GetAvatarActor();
+	
 	//从实例获取到关卡角色的配置
-	UCharacterClassInfo* ClassInfo = GameMode->CharacterClassInfo;
-
+	UCharacterClassInfo* CharacterClassInfo = GetCharacterClassInfo(WorldContextObject);
 	//获取到默认的基础角色数据
-	const FCharacterClassDefaultInfo ClassDefaultInfo = ClassInfo->GetClassDefaultInfo(CharacterClass);
+	const FCharacterClassDefaultInfo ClassDefaultInfo = CharacterClassInfo->GetClassDefaultInfo(CharacterClass);
 
 	//应用基础属性
 	FGameplayEffectContextHandle PrimaryContextHandle = ASC->MakeEffectContext();
-	PrimaryContextHandle.AddSourceObject(WorldContextObject);
+	PrimaryContextHandle.AddSourceObject(AvatorActor);
 	const FGameplayEffectSpecHandle PrimarySpecHandle = ASC->MakeOutgoingSpec(ClassDefaultInfo.PrimaryAttributes, Level, PrimaryContextHandle);
 	ASC->ApplyGameplayEffectSpecToSelf(*PrimarySpecHandle.Data.Get());
 
 	//设置次级属性
 	FGameplayEffectContextHandle SecondaryContextHandle = ASC->MakeEffectContext();
-	SecondaryContextHandle.AddSourceObject(WorldContextObject);
-	const FGameplayEffectSpecHandle SecondarySpecHandle = ASC->MakeOutgoingSpec(ClassInfo->SecondaryAttributes, Level,SecondaryContextHandle);
+	SecondaryContextHandle.AddSourceObject(AvatorActor);
+	const FGameplayEffectSpecHandle SecondarySpecHandle = ASC->MakeOutgoingSpec(CharacterClassInfo->SecondaryAttributes, Level,SecondaryContextHandle);
 	ASC->ApplyGameplayEffectSpecToSelf(*SecondarySpecHandle.Data.Get());
 
 	//填充血量和蓝量
 	FGameplayEffectContextHandle VitalContextHandle = ASC->MakeEffectContext();
-	VitalContextHandle.AddSourceObject(WorldContextObject);
-	const FGameplayEffectSpecHandle VitalSpecHandle = ASC->MakeOutgoingSpec(ClassInfo->VitalAttributes, Level, VitalContextHandle);
+	VitalContextHandle.AddSourceObject(AvatorActor);
+	const FGameplayEffectSpecHandle VitalSpecHandle = ASC->MakeOutgoingSpec(CharacterClassInfo->VitalAttributes, Level, VitalContextHandle);
 	ASC->ApplyGameplayEffectSpecToSelf(*VitalSpecHandle.Data.Get());
 
+}
+
+void UAuraAbilitySystemLibrary::GiveStartupAbilities(const UObject* WorldContextObject, UAbilitySystemComponent* ASC)
+{
+	//获取到当前关卡的GameMode实例
+	const AAuraGameModeBase* GameMode = Cast<AAuraGameModeBase>(UGameplayStatics::GetGameMode(WorldContextObject));
+	if(GameMode == nullptr) return;
+
+	const AActor* AvatarActor = ASC->GetAvatarActor();
+
+	//从实例获取到关卡角色的配置
+	UCharacterClassInfo* CharacterClassInfo = GameMode->CharacterClassInfo;
+
+	//遍历角色拥有的技能数组
+	for(const TSubclassOf<UGameplayAbility> AbilityClass : CharacterClassInfo->CommonAbilities)
+	{
+		FGameplayAbilitySpec AbilitySpec = FGameplayAbilitySpec(AbilityClass, 1); //创建技能实例
+		ASC->GiveAbility(AbilitySpec); //只应用不激活
+	}
+}
+
+UCharacterClassInfo* UAuraAbilitySystemLibrary::GetCharacterClassInfo(const UObject* WorldContextObject)
+{
+	//获取到当前关卡的GameMode实例
+	const AAuraGameModeBase* GameMode = Cast<AAuraGameModeBase>(UGameplayStatics::GetGameMode(WorldContextObject));
+	if(GameMode == nullptr) return nullptr;
+
+	//返回关卡的角色的配置
+	return  GameMode->CharacterClassInfo;
+	
 }

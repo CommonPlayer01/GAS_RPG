@@ -46,6 +46,10 @@ public:
 	FGameplayTag InputTag_3; //3键
 	FGameplayTag InputTag_4; //4键
 
+	FGameplayTag Damage; 
+
+	FGameplayTag Effects_HitReact; //受击 标签
+
 
 private:
 	static FAuraGameplayTags GameplayTags;

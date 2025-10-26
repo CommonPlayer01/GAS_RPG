@@ -32,6 +32,36 @@ UAbilitySystemComponent* AAuraCharacterBase::GetAbilitySystemComponent() const
 	return AbilitySystemComponent;
 }
 
+UAnimMontage* AAuraCharacterBase::GetHitReactMontage_Implementation()
+{
+	return HitReactMontage;
+}
+
+void AAuraCharacterBase::Die()
+{
+	//将武器从角色身上分离
+	Weapon->DetachFromComponent(FDetachmentTransformRules(EDetachmentRule::KeepWorld, true));
+	MulticastHandleDeath();
+}
+
+void AAuraCharacterBase::MulticastHandleDeath_Implementation()
+{
+	//开启武器物理效果
+	Weapon->SetSimulatePhysics(true); //开启模拟物理效果
+	Weapon->SetEnableGravity(true); //开启重力效果
+	Weapon->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly); //开启物理碰撞通道
+
+	//开启角色物理效果
+	GetMesh()->SetSimulatePhysics(true); //开启模拟物理效果
+	GetMesh()->SetEnableGravity(true); //开启重力效果
+	GetMesh()->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly); //开启物理碰撞通道
+	GetMesh()->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Block); //开启角色与静态物体产生碰撞
+
+	//关闭角色碰撞体碰撞通道，避免其对武器和角色模拟物理效果产生影响
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	
+}
+
 // Called when the game starts or when spawned
 void AAuraCharacterBase::BeginPlay()
 {

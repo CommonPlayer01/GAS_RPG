@@ -6,6 +6,7 @@
 #include "Engine/DataAsset.h"
 #include "CharacterClassInfo.generated.h"
 
+class UGameplayAbility;
 class UGameplayEffect;
 //角色职业类型的枚举
 UENUM(BlueprintType)
@@ -46,6 +47,14 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category="Common Class Defaults")
 	TSubclassOf<UGameplayEffect> VitalAttributes;
 
+	UPROPERTY(EditDefaultsOnly, Category="Common Class Defaults")
+	TArray<TSubclassOf<UGameplayAbility>> CommonAbilities;
+
+
+	UPROPERTY(EditDefaultsOnly, Category="Common Class Defaults|Damgage")
+	TObjectPtr<UCurveTable> DamageCalculationCoefficients;
+
+	
 	//通过枚举获取对应的初始化类
 	FCharacterClassDefaultInfo GetClassDefaultInfo(ECharacterClass CharacterClass);
 	

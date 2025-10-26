@@ -9,6 +9,8 @@
 #include "UI/WidgetController/OverlayWidgetController.h"
 #include "AuraEnemy.generated.h"
 
+class AAuraAIController;
+class UBehaviorTree;
 class UWidgetComponent;
 /**
  * 
@@ -19,6 +21,9 @@ class AURA_API AAuraEnemy : public AAuraCharacterBase, public IEnemyInterface
 	GENERATED_BODY()
 public:
 	AAuraEnemy();
+
+	virtual void PossessedBy(AController* NewController) override;
+
 	/* IEnemyInterface敌人接口 */
 	virtual void HighlightActor() override; //高亮
 	virtual void UnHighlightActor() override; //取消高亮
@@ -26,6 +31,7 @@ public:
 
 	/* ICombatInterface战斗接口 */
 	virtual int32 GetPlayerLevel() override;
+	virtual void Die() override;
 	/* ICombatInterface战斗接口 结束 */
 
 
@@ -38,6 +44,19 @@ public:
 	
 	UPROPERTY(BlueprintReadOnly) //蓝图可读
 	bool bHighlighted = false; //是否高亮
+
+	void HitReactTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
+
+	UPROPERTY(BlueprintReadOnly, Category="Combat")
+	bool bHitReacting = false; //当前是否处于被攻击状态
+
+	UPROPERTY(BlueprintReadOnly, Category="Combat")
+	float BaseWalkSpeed = 250.f; //当前角色的最大移动速度
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Combat")
+	float LifeSpan = 5.f; //设置死亡后的存在时间
+
+
 protected:
 	virtual void BeginPlay() override;
 	virtual void InitAbilityActorInfo() override;
@@ -52,5 +71,12 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Widget")
 	TObjectPtr<UWidgetComponent> HealthBar;
+
+	UPROPERTY(EditAnywhere, Category="AI")
+	TObjectPtr<UBehaviorTree> BehaviorTree;
+
+	UPROPERTY()
+	TObjectPtr<AAuraAIController> AuraAIController;
+
 
 };
