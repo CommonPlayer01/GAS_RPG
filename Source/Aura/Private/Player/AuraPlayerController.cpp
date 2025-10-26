@@ -53,7 +53,7 @@ void AAuraPlayerController::PlayerTick(float DeltaTime)
 
 }
 
-void AAuraPlayerController::ShowDamageNumber_Implementation(float DamageAmount, ACharacter* TargetCharacter)
+void AAuraPlayerController::ShowDamageNumber_Implementation(float DamageAmount, ACharacter* TargetCharacter, bool bBlocked, bool bCriticalHit)
 {
 	if(IsValid(TargetCharacter) && DamageTextComponentClass)
 	{
@@ -61,7 +61,7 @@ void AAuraPlayerController::ShowDamageNumber_Implementation(float DamageAmount, 
 		DamageText->RegisterComponent(); //动态创建的组件需要调用注册
 		DamageText->AttachToComponent(TargetCharacter->GetRootComponent(), FAttachmentTransformRules::KeepRelativeTransform); //先附加到角色身上，使用角色位置
 		DamageText->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform); //然后从角色身上分离，保证在一个位置播放完成动画
-		DamageText->SetDamageText(DamageAmount); //设置显示的伤害数字
+		DamageText->SetDamageText(DamageAmount, bBlocked, bCriticalHit); //设置显示的伤害数字
 	}
 
 }

@@ -6,6 +6,7 @@
 #include "GameplayEffectExtension.h"
 #include "AbilitySystemComponent.h"
 #include "AuraGameplayTags.h"
+#include "AbilitySystem/AuraAbilitySystemLibrary.h"
 #include "GameFramework/Character.h"
 #include "Interaction/CombatInterface.h"
 #include "Kismet/GameplayStatics.h"
@@ -125,19 +126,24 @@ void UAuraAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallba
 				Props.TargetASC->TryActivateAbilitiesByTag(TagContainer); //根据tag标签激活技能
 				GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, FString::Printf(TEXT("ActivateAbilitiesByTag")));
 			}
-			ShowFloatingText(Props, LocalIncomingDamage);
+
+			//获取格挡和暴击
+			const bool IsBlockedHit = UAuraAbilitySystemLibrary::IsBlockedHit(Props.EffectContextHandle);
+			const bool IsCriticalHit = UAuraAbilitySystemLibrary::IsCriticalHit(Props.EffectContextHandle);
+
+			ShowFloatingText(Props, LocalIncomingDamage, IsBlockedHit, IsCriticalHit);
 		}
 	}
 }
 
-void UAuraAttributeSet::ShowFloatingText(const FEffectProperties& Props, const float Damage)
+void UAuraAttributeSet::ShowFloatingText(const FEffectProperties& Props, const float Damage, bool bBlocked, bool bCriticalHit)
 {
 	//调用显示伤害数字
 	if(Props.SourceCharacter != Props.TargetCharacter)
 	{
-		if(AAuraPlayerController* PC = Cast<AAuraPlayerController>(UGameplayStatics::GetPlayerController(Props.SourceCharacter, 0)))
+		if(AAuraPlayerController* PC = Cast<AAuraPlayerController>(Props.SourceCharacter->Controller))
 		{
-			PC->ShowDamageNumber(Damage, Props.TargetCharacter); //调用显示伤害数字
+			PC->ShowDamageNumber(Damage, Props.TargetCharacter, bBlocked, bCriticalHit); //调用显示伤害数字
 		}
 	}
 }

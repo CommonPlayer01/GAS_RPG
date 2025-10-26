@@ -32,6 +32,46 @@ AAuraEnemy::AAuraEnemy()
 
 }
 
+void AAuraEnemy::BeginPlay()
+{
+	Super::BeginPlay();
+	GetCharacterMovement()->MaxWalkSpeed = BaseWalkSpeed;
+	InitAbilityActorInfo();
+	//初始化角色的技能
+	if (HasAuthority())
+	{
+		UAuraAbilitySystemLibrary::GiveStartupAbilities(this, AbilitySystemComponent);
+	}
+
+	if(UAuraUserWidget* UserWidget = Cast<UAuraUserWidget>(HealthBar->GetUserWidgetObject()))
+	{
+		UserWidget->SetWidgetController(this);
+	}
+	
+	if(const UAuraAttributeSet* AS = Cast<UAuraAttributeSet>(AttributeSet))
+	{
+		//监听血量变化
+		AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AS->GetHealthAttribute()).AddLambda(
+			[this](const FOnAttributeChangeData& Data)
+			{
+				OnHealthChanged.Broadcast(Data.NewValue);
+			}
+		);
+		AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AS->GetMaxHealthAttribute()).AddLambda(
+			[this](const FOnAttributeChangeData& Data)
+			{
+				OnMaxHealthChanged.Broadcast(Data.NewValue);
+			}
+		);
+
+		AbilitySystemComponent->RegisterGameplayTagEvent(FAuraGameplayTags::Get().Effects_HitReact, EGameplayTagEventType::NewOrRemoved).AddUObject(this, &ThisClass::HitReactTagChanged);
+
+		//初始化血量
+		OnHealthChanged.Broadcast(AS->GetHealth());
+		OnMaxHealthChanged.Broadcast(AS->GetMaxHealth());
+	}
+}
+
 void AAuraEnemy::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
@@ -79,42 +119,7 @@ void AAuraEnemy::HitReactTagChanged(const FGameplayTag CallbackTag, int32 NewCou
 	GetCharacterMovement()->MaxWalkSpeed = bHitReacting ? 0.f : BaseWalkSpeed;
 }
 
-void AAuraEnemy::BeginPlay()
-{
-	Super::BeginPlay();
-	GetCharacterMovement()->MaxWalkSpeed = BaseWalkSpeed;
-	InitAbilityActorInfo();
-	//初始化角色的技能
-	UAuraAbilitySystemLibrary::GiveStartupAbilities(this, AbilitySystemComponent);
 
-	if(UAuraUserWidget* UserWidget = Cast<UAuraUserWidget>(HealthBar->GetUserWidgetObject()))
-	{
-		UserWidget->SetWidgetController(this);
-	}
-	
-	if(const UAuraAttributeSet* AS = Cast<UAuraAttributeSet>(AttributeSet))
-	{
-		//监听血量变化
-		AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AS->GetHealthAttribute()).AddLambda(
-			[this](const FOnAttributeChangeData& Data)
-			{
-				OnHealthChanged.Broadcast(Data.NewValue);
-			}
-		);
-		AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AS->GetMaxHealthAttribute()).AddLambda(
-			[this](const FOnAttributeChangeData& Data)
-			{
-				OnMaxHealthChanged.Broadcast(Data.NewValue);
-			}
-		);
-
-		AbilitySystemComponent->RegisterGameplayTagEvent(FAuraGameplayTags::Get().Effects_HitReact, EGameplayTagEventType::NewOrRemoved).AddUObject(this, &ThisClass::HitReactTagChanged);
-
-		//初始化血量
-		OnHealthChanged.Broadcast(AS->GetHealth());
-		OnMaxHealthChanged.Broadcast(AS->GetMaxHealth());
-	}
-}
 
 
 void AAuraEnemy::InitAbilityActorInfo()

@@ -4,6 +4,7 @@
 #include "AbilitySystem/ExecCalc/ExecCalc_Damage.h"
 
 #include "AbilitySystemComponent.h"
+#include "AuraAbilityTypes.h"
 #include "AuraGameplayTags.h"
 #include "AbilitySystem/AuraAbilitySystemLibrary.h"
 #include "AbilitySystem/AuraAttributeSet.h"
@@ -83,7 +84,7 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 
 	//从Set by Caller 获取Damage的伤害值
 	float Damage = Spec.GetSetByCallerMagnitude(FAuraGameplayTags::Get().Damage);
-	Damage += 50;
+	// Damage += 10;
 
 
 	//获取格挡率，如果触发格挡，伤害减少一半
@@ -91,7 +92,14 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 	ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(DamageStatics().BlockChanceDef, EvaluationParameters, TargetBlockChance);
 	TargetBlockChance = FMath::Max(0.f, TargetBlockChance);
 	//处理格挡触发
-	if(FMath::RandRange(1, 100) < TargetBlockChance) Damage *= 0.5f;
+	const bool bBlocked = FMath::RandRange(1, 100) < TargetBlockChance;
+
+	//获取GE的上下文句柄
+	FGameplayEffectContextHandle EffectContextHandle = Spec.GetContext();
+
+	//设置格挡
+	UAuraAbilitySystemLibrary::SetIsBlockHit(EffectContextHandle, bBlocked);
+
 
 	//获取目标护甲值
 	float TargetArmor = 0.f;
@@ -136,8 +144,12 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 	const FRealCurve* CriticalHitResistanceCurve = CharacterClassInfo->DamageCalculationCoefficients->FindCurve(FName("CriticalHitResistance"), FString());
 	const float CriticalHitResistanceCoefficient = CriticalHitResistanceCurve->Eval(TargetCombatInterface->GetPlayerLevel());
 	//计算当前是否暴击
-	const float EffectiveCriticalHitChance = SourceCriticalHitChance - TargetCriticalHitResistance * CriticalHitResistanceCoefficient;
+	const float EffectiveCriticalHitChance = SourceCriticalHitChance - TargetCriticalHitResistance * CriticalHitResistanceCoefficient + 30;
 	const bool bCriticalHit = FMath::RandRange(1, 100) < EffectiveCriticalHitChance;
+
+	//设置暴击
+	UAuraAbilitySystemLibrary::SetIsCriticalHit(EffectContextHandle, bCriticalHit);
+
 	//触发暴击 伤害乘以暴击伤害率
 	if(bCriticalHit) Damage = Damage * 2.f + SourceCriticalHitDamage;
 

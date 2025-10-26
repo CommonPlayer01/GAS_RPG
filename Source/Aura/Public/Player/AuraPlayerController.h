@@ -29,7 +29,7 @@ public:
 	virtual void PlayerTick(float DeltaTime) override;
 
 	UFUNCTION(Client, Reliable)
-	void ShowDamageNumber(float DamageAmount, ACharacter* TargetCharacter); //在每个客户端显示伤害数值
+	void ShowDamageNumber(float DamageAmount, ACharacter* TargetCharacter, bool bBlocked, bool bCriticalHit); //在每个客户端显示伤害数值
 
 protected:
 	virtual void BeginPlay() override; //游戏开始时触发
