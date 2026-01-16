@@ -53,8 +53,6 @@ void UOverlayWidgetController::BindCallbacksToDependencies()
 			}
 		}
 	);
-
-	
 }
 
 void UOverlayWidgetController::HealthChanged(const FOnAttributeChangeData& Data) const

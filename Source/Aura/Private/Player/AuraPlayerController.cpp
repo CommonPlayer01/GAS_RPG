@@ -124,6 +124,11 @@ void AAuraPlayerController::SetupInputComponent()
 
 void AAuraPlayerController::Move(const FInputActionValue& InputActionValue)
 {
+	//方向控制，如果阻止了按住事件，将不再执行
+	if(GetASC() && GetASC()->HasMatchingGameplayTag(FAuraGameplayTags::Get().Player_Block_InputHold))
+	{
+		return;
+	}
 	const FVector2D InputAxisVector = InputActionValue.Get<FVector2D>(); //获取输入操作的2维向量值
 	const FRotator Rotation = GetControlRotation(); //获取控制器旋转
 	const FRotator YawRotation(0.f, Rotation.Yaw, 0.f); //通过控制器的垂直朝向创建一个旋转值，忽略上下朝向和左右朝向
@@ -141,6 +146,16 @@ void AAuraPlayerController::Move(const FInputActionValue& InputActionValue)
 void AAuraPlayerController::CursorTrace()
 //鼠标位置追踪
 {
+	//判断当前事件是否被阻挡，如果事件被阻挡，则清除相关内容
+	if(GetASC() && GetASC()->HasMatchingGameplayTag(FAuraGameplayTags::Get().Player_Block_CursorTrace))
+	{
+		if(ThisActor) ThisActor->UnHighlightActor();
+		if(LastActor) LastActor->UnHighlightActor();
+		ThisActor = nullptr; 
+		LastActor = nullptr;
+		return;
+	}
+
 
 	GetHitResultUnderCursor(ECC_Visibility, false, CursorHit); //获取可视的鼠标命中结果
 	if(!CursorHit.bBlockingHit) return; //如果未命中直接返回
@@ -167,18 +182,36 @@ void AAuraPlayerController::CursorTrace()
 
 void AAuraPlayerController::AbilityInputTagPressed(const FGameplayTag InputTag)
 {
-	// GEngine->AddOnScreenDebugMessage(1, 3.f, FColor::Red, *InputTag.ToString());
+	//处理判断按下事件是否被阻挡
+	if(GetASC() && GetASC()->HasMatchingGameplayTag(FAuraGameplayTags::Get().Player_Block_InputPressed))
+	{
+		return;
+	}
 
 	if(InputTag.MatchesTagExact(FAuraGameplayTags::Get().InputTag_LMB))
 	{
 		bTargeting = ThisActor != nullptr; //ThisActor为鼠标悬停在敌人身上才会有值
 		bAutoRunning = false;
 		FollowTime = 0.f; //重置统计的时间
+
+		if(bTargeting || bShiftKeyDown)
+		{
+			if (GetASC()) GetASC()->AbilityInputTagPressed(InputTag);
+		}
+	}else
+	{
+		if (GetASC()) GetASC()->AbilityInputTagPressed(InputTag);
 	}
+	
 }
 
 void AAuraPlayerController::AbilityInputTagReleased(const FGameplayTag InputTag)
 {
+	//处理判断抬起事件是否被阻挡
+	if(GetASC() && GetASC()->HasMatchingGameplayTag(FAuraGameplayTags::Get().Player_Block_InputReleased))
+	{
+		return;
+	}
 	if(!InputTag.MatchesTagExact(FAuraGameplayTags::Get().InputTag_LMB))
 	{
 		if(GetASC())
@@ -187,7 +220,9 @@ void AAuraPlayerController::AbilityInputTagReleased(const FGameplayTag InputTag)
 		}
 		return;
 	}
-	if(GetASC()) GetASC()->AbilityInputTagReleased(InputTag);
+
+	// if(GetASC()) GetASC()->AbilityInputTagReleased(InputTag);
+	
 	
 	if(!bTargeting && !bShiftKeyDown)
 	{
@@ -201,7 +236,7 @@ void AAuraPlayerController::AbilityInputTagReleased(const FGameplayTag InputTag)
 				for(const FVector& PointLoc : NavPath->PathPoints)
 				{
 					Spline->AddSplinePoint(PointLoc, ESplineCoordinateSpace::World); //将新的位置添加到样条曲线中
-					DrawDebugSphere(GetWorld(), PointLoc, 8.f, 8, FColor::Orange, false, 5.f); //点击后debug调试
+					DrawDebugSphere(GetWorld(), PointLoc, 8.f, 8, FColor::Green, false, 5.f); //点击后debug调试
 				}
 				if (NavPath->PathPoints.Num() == 0) return;
 				//自动寻路将最终目的地设置为导航的终点，方便停止导航
@@ -216,6 +251,11 @@ void AAuraPlayerController::AbilityInputTagReleased(const FGameplayTag InputTag)
 
 void AAuraPlayerController::AbilityInputTagHold(const  FGameplayTag InputTag)
 {
+	//通过标签阻止悬停事件的触发
+	if(GetASC() && GetASC()->HasMatchingGameplayTag(FAuraGameplayTags::Get().Player_Block_InputHold))
+	{
+		return;
+	}
 	if(!InputTag.MatchesTagExact(FAuraGameplayTags::Get().InputTag_LMB))
 	{
 		if(GetASC())
@@ -227,7 +267,8 @@ void AAuraPlayerController::AbilityInputTagHold(const  FGameplayTag InputTag)
 
 	if(bTargeting || bShiftKeyDown)
 	{
-		if(GetASC()) GetASC()->AbilityInputTagHold(InputTag);
+		// if(GetASC()) GetASC()->AbilityInputTagHold(InputTag);
+		return;
 	}
 	else
 	{

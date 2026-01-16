@@ -164,4 +164,28 @@ void FAuraGameplayTags::InitializeInputGameplayTags()
 		FString("受到攻击时，赋予的标签")
 	);
 
+	/*
+	 * 阻止相关鼠标事件的触发标签
+	*/
+	GameplayTags.Player_Block_InputPressed = UGameplayTagsManager::Get()
+		.AddNativeGameplayTag(
+			FName("Player.Block.InputPressed"),
+			FString("阻挡键位按下输入")
+			);
+	GameplayTags.Player_Block_InputHold = UGameplayTagsManager::Get()
+		.AddNativeGameplayTag(
+			FName("Player.Block.InputHold"),
+			FString("阻挡键位悬停输入")
+			);
+	GameplayTags.Player_Block_InputReleased = UGameplayTagsManager::Get()
+		.AddNativeGameplayTag(
+			FName("Player.Block.InputReleased"),
+			FString("阻挡键位抬起输入")
+			);
+	GameplayTags.Player_Block_CursorTrace = UGameplayTagsManager::Get()
+		.AddNativeGameplayTag(
+			FName("Player.Block.CursorTrace"),
+			FString("阻挡鼠标拾取事件")
+			);
+
 }

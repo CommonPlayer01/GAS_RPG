@@ -124,7 +124,7 @@ void UAuraAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallba
 				FGameplayTagContainer TagContainer;
 				TagContainer.AddTag(FAuraGameplayTags::Get().Effects_HitReact);
 				Props.TargetASC->TryActivateAbilitiesByTag(TagContainer); //根据tag标签激活技能
-				GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, FString::Printf(TEXT("ActivateAbilitiesByTag")));
+				// GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, FString::Printf(TEXT("ActivateAbilitiesByTag")));
 			}
 
 			//获取格挡和暴击

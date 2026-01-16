@@ -51,6 +51,14 @@ public:
 	FGameplayTag Effects_HitReact; //受击 标签
 
 
+	//阻止输入相关事件触发
+	FGameplayTag Player_Block_InputPressed; //阻挡键位按下输入
+	FGameplayTag Player_Block_InputHold; //阻挡键位悬停输入
+	FGameplayTag Player_Block_InputReleased; //阻挡键位抬起输入
+	FGameplayTag Player_Block_CursorTrace; //阻挡鼠标拾取事件
+
+
+
 private:
 	static FAuraGameplayTags GameplayTags;
 	

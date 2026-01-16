@@ -93,7 +93,8 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 	TargetBlockChance = FMath::Max(0.f, TargetBlockChance);
 	//处理格挡触发
 	const bool bBlocked = FMath::RandRange(1, 100) < TargetBlockChance;
-
+	if(bBlocked) Damage *= 0.5f;
+	
 	//获取GE的上下文句柄
 	FGameplayEffectContextHandle EffectContextHandle = Spec.GetContext();
 

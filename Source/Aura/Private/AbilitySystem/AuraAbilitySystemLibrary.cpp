@@ -6,6 +6,7 @@
 #include "AuraAbilityTypes.h"
 #include "AbilitySystem/Data/CharacterClassInfo.h"
 #include "Game/AuraGameModeBase.h"
+#include "Interaction/CombatInterface.h"
 #include "Kismet/GameplayStatics.h"
 #include "Player/AuraPlayerState.h"
 #include "UI/HUD/AuraHUD.h"
@@ -136,6 +137,68 @@ void UAuraAbilitySystemLibrary::SetIsCriticalHit(FGameplayEffectContextHandle& E
 {
 	FAuraGameplayEffectContext* RPGEffectContext = static_cast<FAuraGameplayEffectContext*>(EffectContextHandle.Get());
 	RPGEffectContext->SetIsCriticalHit(bInIsCriticalHit);
+
+}
+
+void UAuraAbilitySystemLibrary::GetLivePlayersWithinRadius(const UObject* WorldContextObject,
+														   TArray<AActor*>& OutOverlappingActors, const TArray<AActor*>& ActorsToIgnore, float Radius,
+														   const FVector& SphereOrigin)
+{
+	FCollisionQueryParams SphereParams;
+	SphereParams.AddIgnoredActors(ActorsToIgnore);
+	
+	if (const UWorld* World = GEngine->GetWorldFromContextObject(WorldContextObject, EGetWorldErrorMode::LogAndReturnNull))
+	{
+		TArray<FOverlapResult> Overlaps;
+		World->OverlapMultiByObjectType(Overlaps, SphereOrigin, FQuat::Identity, FCollisionObjectQueryParams(FCollisionObjectQueryParams::InitType::AllDynamicObjects), FCollisionShape::MakeSphere(Radius), SphereParams);
+		for (FOverlapResult& Overlap : Overlaps)
+		{
+			if (Overlap.GetActor()->Implements<UCombatInterface>() && !ICombatInterface::Execute_IsDead(Overlap.GetActor()))
+			{
+				OutOverlappingActors.AddUnique(ICombatInterface::Execute_GetAvatar(Overlap.GetActor()));
+			}
+		}
+	}
+}
+
+void UAuraAbilitySystemLibrary::GetClosestTargets(int32 MaxTargets, const TArray<AActor*>& Actors,
+                                                  TArray<AActor*>& OutClosestTargets, const FVector& Origin)
+{
+	
+	//如果数量过于少，直接返回原数组
+	if(Actors.Num() <= MaxTargets)
+	{
+		OutClosestTargets = Actors;
+		return;
+	}
+
+	TArray<AActor*> ActorsToCheck = Actors; //没有引用就是复制，复制一份用于遍历
+	int32 NumTargetFound = 0; //当前已经遍历出最近距离的个数
+
+	//循环遍历，直到获得足够数量的目标时停止
+	while (NumTargetFound < MaxTargets)
+	{
+		if(ActorsToCheck.Num() == 0) break; //如果没有可遍历内容，将跳出循环
+		double ClosestDistance = TNumericLimits<double>::Max(); //记录中心于目标的位置，如果有更小的将被替换，默认是最大
+		AActor* ClosestActor; //缓存当前最近距离的目标
+		for(AActor* PotentialTarget : ActorsToCheck)
+		{
+			//获取目标和中心的距离
+			const double Distance = (PotentialTarget->GetActorLocation() - Origin).Length();
+
+			//比对当前计算的位置是否小于缓存的位置
+			if(Distance < ClosestDistance)
+			{
+				//如果小于，将替换对应信息
+				ClosestDistance = Distance;
+				ClosestActor = PotentialTarget;
+			}
+		}
+	
+		ActorsToCheck.Remove(ClosestActor); //从遍历数组中删除缓存的对象
+		OutClosestTargets.AddUnique(ClosestActor); //添加到返回的数组中
+		++ NumTargetFound; //递增数量
+	}
 
 }
 

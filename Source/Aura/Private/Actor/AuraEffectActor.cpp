@@ -77,6 +77,7 @@ void AAuraEffectActor::OnOverlap(AActor* TargetActor)
 	{
 		ApplyEffectToTarget(TargetActor, InfinityGameplayEffectClass);
 	}
+
 }
 
 
@@ -119,7 +120,6 @@ void AAuraEffectActor::OnEndOverlap(AActor* TargetActor)
 				HandlesToRemove.Add(HandlePair.Key);
 			}
 		}
-
 		//遍历完成后，在Map中将移除效果的KeyValue删除
 		for(auto& Handle : HandlesToRemove)
 		{

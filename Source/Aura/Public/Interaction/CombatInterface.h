@@ -33,4 +33,21 @@ public:
 
 	virtual void Die() = 0;
 
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
+	void SetInShockLoop(bool bInLoop);
+
+	/**
+	 * 获取角色使用的武器指针
+	 * @return 武器骨骼网格体组件
+	 */
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	USkeletalMeshComponent* GetWeapon();
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	bool IsDead() const;
+
+	
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	AActor* GetAvatar();
+
 };

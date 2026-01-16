@@ -77,7 +77,7 @@ void UAuraProjectileSpell::SpawnProjectile(const FVector& ProjectileTargetLocati
 		FAuraGameplayTags GameplayTags = FAuraGameplayTags::Get();
 
 		const float ScaledDamage = Damage.GetValueAtLevel(GetAbilityLevel() + 3); //根据等级获取技能伤害
-		GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, FString::Printf(TEXT("火球术伤害：%f"), ScaledDamage));
+		// GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, FString::Printf(TEXT("火球术伤害：%f"), ScaledDamage));
 
 		// 通过 TagSetByCaller 机制，动态设置该 Spec 中某个标签对应的数值
 		// 此处将 "Effects.HitReact" 标签的值设为 50.0，通常用于控制命中反应（如受击动画强度、击退力度等）

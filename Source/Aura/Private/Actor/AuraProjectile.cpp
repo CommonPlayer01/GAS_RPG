@@ -89,6 +89,7 @@ void AAuraProjectile::PlayImpact() const
 	UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, ImpactEffect, GetActorLocation());
 	//将音乐停止后会自动销毁
 	LoopingSoundComponent->Stop();
+	LoopingSoundComponent->DestroyComponent();
 
 }
 

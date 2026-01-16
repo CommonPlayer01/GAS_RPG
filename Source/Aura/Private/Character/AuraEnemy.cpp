@@ -120,8 +120,6 @@ void AAuraEnemy::HitReactTagChanged(const FGameplayTag CallbackTag, int32 NewCou
 }
 
 
-
-
 void AAuraEnemy::InitAbilityActorInfo()
 {
 	AbilitySystemComponent->InitAbilityActorInfo(this, this);

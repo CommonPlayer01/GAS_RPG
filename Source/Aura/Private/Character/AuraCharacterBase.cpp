@@ -62,6 +62,21 @@ void AAuraCharacterBase::MulticastHandleDeath_Implementation()
 	
 }
 
+USkeletalMeshComponent* AAuraCharacterBase::GetWeapon_Implementation()
+{
+	return Weapon;
+}
+
+AActor* AAuraCharacterBase::GetAvatar_Implementation()
+{
+	return this;
+}
+
+bool AAuraCharacterBase::IsDead_Implementation() const
+{
+	return bDead;
+}
+
 // Called when the game starts or when spawned
 void AAuraCharacterBase::BeginPlay()
 {

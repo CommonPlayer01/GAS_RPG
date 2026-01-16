@@ -4,6 +4,7 @@
 #include "AbilitySystem/TargetDataUnderMouse.h"
 
 #include "AbilitySystemComponent.h"
+#include "Aura/Aura.h"
 
 UTargetDataUnderMouse* UTargetDataUnderMouse::CreateTargetDataUnderMouse(UGameplayAbility* OwningAbility)
 {
@@ -61,7 +62,7 @@ void UTargetDataUnderMouse::SendMouseCursorData()
 
 	// 执行鼠标拾取：从摄像机发射一条射线，检测可见物体（ECC_Visibility 通道）
 	// false 表示不追踪复杂碰撞（只用简单碰撞体）
-	PC->GetHitResultUnderCursor(ECC_Visibility, false, CursorHit);
+	PC->GetHitResultUnderCursor(ECC_Target, false, CursorHit);
 
 	// 创建目标数据对象：单目标命中（SingleTargetHit）
 	// 这是 GAS 内置的一种 TargetData 类型，封装了 HitResult

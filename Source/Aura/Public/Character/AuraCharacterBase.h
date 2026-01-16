@@ -33,6 +33,11 @@ public:
 	UFUNCTION(NetMulticast, Reliable)
 	virtual void MulticastHandleDeath();
 
+	virtual USkeletalMeshComponent* GetWeapon_Implementation() override;
+
+	virtual AActor* GetAvatar_Implementation() override;
+
+	virtual bool IsDead_Implementation() const override;
 	
 protected:
 	// Called when the game starts or when spawned
@@ -69,6 +74,9 @@ protected:
 	FName WeaponTipSocketName;
 
 	virtual FVector GetCombatSocketLocation() override;
+
+	UPROPERTY(BlueprintReadOnly)
+	bool bDead = false;
 
 private:
 
