@@ -39,6 +39,13 @@ public:
 	FGameplayTag Attributes_Secondary_HealthRegeneration;
 	FGameplayTag Attributes_Secondary_ManaRegeneration;
 
+	//属性伤害抗性
+	FGameplayTag Attributes_Resistance_Fire; //火属性伤害抵抗 标签
+	FGameplayTag Attributes_Resistance_Lightning; //雷属性伤害抵抗 标签
+	FGameplayTag Attributes_Resistance_Arcane; //魔法伤害抵抗 标签
+	FGameplayTag Attributes_Resistance_Physical; //物理伤害抵抗 标签
+
+
 	FGameplayTag InputTag_LMB; //鼠标左键
 	FGameplayTag InputTag_RMB; //鼠标右键
 	FGameplayTag InputTag_1; //1键
@@ -46,7 +53,16 @@ public:
 	FGameplayTag InputTag_3; //3键
 	FGameplayTag InputTag_4; //4键
 
-	FGameplayTag Damage; 
+
+	FGameplayTag Damage; //伤害 标签
+	FGameplayTag Damage_Fire; //火属性伤害 标签
+	FGameplayTag Damage_Lightning; //雷属性伤害 标签
+	FGameplayTag Damage_Arcane; //魔法伤害 标签
+	FGameplayTag Damage_Physical; //物理伤害 标签
+	
+
+	TMap<FGameplayTag, FGameplayTag> DamageTypesToResistances;
+
 
 	FGameplayTag Effects_HitReact; //受击 标签
 
@@ -57,7 +73,7 @@ public:
 	FGameplayTag Player_Block_InputReleased; //阻挡键位抬起输入
 	FGameplayTag Player_Block_CursorTrace; //阻挡鼠标拾取事件
 
-
+	TArray<FGameplayTag> DamageTypes;
 
 private:
 	static FAuraGameplayTags GameplayTags;

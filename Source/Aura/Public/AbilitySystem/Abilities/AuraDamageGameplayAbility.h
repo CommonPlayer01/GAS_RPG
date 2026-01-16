@@ -18,8 +18,13 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	TSubclassOf<UGameplayEffect> DamageEffectClass;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Damage")
-	FScalableFloat Damage;
+	/*
+	* struct FScalableFloat
+	{
+		float Value;                      // 基础值（默认值）
+		TMap<FName, float> ScalabilityMap; // 按可扩展性级别（如 "Low", "Medium", "High"）映射的值
+	};
+	 */
 
 	UPROPERTY(EditDefaultsOnly,Category="Damage")
 	TMap<FGameplayTag, FScalableFloat> DamageTags;

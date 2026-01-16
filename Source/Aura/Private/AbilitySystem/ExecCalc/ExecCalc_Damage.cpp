@@ -83,9 +83,15 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 	
 
 	//从Set by Caller 获取Damage的伤害值
-	float Damage = Spec.GetSetByCallerMagnitude(FAuraGameplayTags::Get().Damage);
+	// float Damage = Spec.GetSetByCallerMagnitude(FAuraGameplayTags::Get().Damage);
 	// Damage += 10;
 
+	float Damage = 0.f;
+	for (FGameplayTag DamageTypeTag : FAuraGameplayTags::Get().DamageTypes)
+	{
+		const float DamageTypeValue = Spec.GetSetByCallerMagnitude(DamageTypeTag);
+		Damage += DamageTypeValue;
+	}
 
 	//获取格挡率，如果触发格挡，伤害减少一半
 	float TargetBlockChance = 0.f;
