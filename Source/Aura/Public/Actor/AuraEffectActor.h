@@ -46,7 +46,11 @@ protected:
 	void ApplyEffectToTarget(AActor* TargetActor, TSubclassOf<UGameplayEffect> GameplayEffectClass);//给与目标添加GameplayEffect
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Apply Effects")
-	bool bDestroyOnEffectRemoval = false;
+	bool bDestroyOnEffectApplication = false;
+
+	//敌人是否能够拾取此物体
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Apply Effects")
+	bool bApplyEffectsToEnemies = false;
 
 	//在重叠开始时处理效果的添加删除逻辑
 	UFUNCTION(BlueprintCallable) 
