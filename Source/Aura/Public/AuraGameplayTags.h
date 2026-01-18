@@ -59,6 +59,9 @@ public:
 	FGameplayTag Damage_Lightning; //雷属性伤害 标签
 	FGameplayTag Damage_Arcane; //魔法伤害 标签
 	FGameplayTag Damage_Physical; //物理伤害 标签
+
+
+	FGameplayTag Abilities_Attack; //攻击技能激活标签
 	
 
 	TMap<FGameplayTag, FGameplayTag> DamageTypesToResistances;

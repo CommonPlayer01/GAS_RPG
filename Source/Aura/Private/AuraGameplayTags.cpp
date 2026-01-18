@@ -223,6 +223,16 @@ void FAuraGameplayTags::InitializeInputGameplayTags()
 		FString("受到攻击时，赋予的标签")
 	);
 
+
+	/*
+	 * Abilities
+	 */
+	GameplayTags.Abilities_Attack = UGameplayTagsManager::Get()
+		.AddNativeGameplayTag(
+			FName("Abilities.Attack"),
+			FString("攻击技能标签")
+		);
+	
 	/*
 	 * 阻止相关鼠标事件的触发标签
 	*/
@@ -246,5 +256,7 @@ void FAuraGameplayTags::InitializeInputGameplayTags()
 			FName("Player.Block.CursorTrace"),
 			FString("阻挡鼠标拾取事件")
 			);
+
+
 
 }

@@ -78,23 +78,37 @@ void UAuraAbilitySystemLibrary::InitializeDefaultAttributes(const UObject* World
 
 }
 
-void UAuraAbilitySystemLibrary::GiveStartupAbilities(const UObject* WorldContextObject, UAbilitySystemComponent* ASC)
+void UAuraAbilitySystemLibrary::GiveStartupAbilities(const UObject* WorldContextObject, UAbilitySystemComponent* ASC, ECharacterClass CharacterClass)
 {
-	//获取到当前关卡的GameMode实例
-	const AAuraGameModeBase* GameMode = Cast<AAuraGameModeBase>(UGameplayStatics::GetGameMode(WorldContextObject));
-	if(GameMode == nullptr) return;
+	UCharacterClassInfo* CharacterClassInfo = GetCharacterClassInfo(WorldContextObject);
+	if(CharacterClassInfo == nullptr) return;
 
-	const AActor* AvatarActor = ASC->GetAvatarActor();
+	//从战斗接口获取到角色的等级
+	ICombatInterface* CombatInterface = Cast<ICombatInterface>(ASC->GetAvatarActor());
+	int32 CharacterLevel = 1;
+	if(CombatInterface)
+	{
+		CharacterLevel = CombatInterface->GetPlayerLevel();
+	}
 
-	//从实例获取到关卡角色的配置
-	UCharacterClassInfo* CharacterClassInfo = GameMode->CharacterClassInfo;
-
-	//遍历角色拥有的技能数组
+	//应用角色拥有的技能数组
 	for(const TSubclassOf<UGameplayAbility> AbilityClass : CharacterClassInfo->CommonAbilities)
 	{
-		FGameplayAbilitySpec AbilitySpec = FGameplayAbilitySpec(AbilityClass, 1); //创建技能实例
+		FGameplayAbilitySpec AbilitySpec = FGameplayAbilitySpec(AbilityClass, CharacterLevel); //创建技能实例
 		ASC->GiveAbility(AbilitySpec); //只应用不激活
 	}
+
+	//获取到默认的基础角色数据
+	const FCharacterClassDefaultInfo ClassDefaultInfo = CharacterClassInfo->GetClassDefaultInfo(CharacterClass);
+
+	//应用职业技能数组
+	for(const TSubclassOf<UGameplayAbility> AbilityClass : ClassDefaultInfo.StartupAbilities)
+	{
+		FGameplayAbilitySpec AbilitySpec = FGameplayAbilitySpec(AbilityClass, CharacterLevel); //创建技能实例
+		ASC->GiveAbility(AbilitySpec); //只应用不激活
+	}
+
+	
 }
 
 UCharacterClassInfo* UAuraAbilitySystemLibrary::GetCharacterClassInfo(const UObject* WorldContextObject)
