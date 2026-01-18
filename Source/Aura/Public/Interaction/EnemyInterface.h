@@ -24,4 +24,11 @@ class AURA_API IEnemyInterface
 public:
 	virtual void HighlightActor() = 0; //高亮
 	virtual void UnHighlightActor() = 0; //取消高亮
+
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	void SetCombatTarget(AActor* InCombatTarget); //设置敌人的攻击目标
+
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	AActor* GetCombatTarget() const; //获取敌人的攻击目标
+
 };

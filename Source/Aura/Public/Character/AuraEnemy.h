@@ -32,6 +32,9 @@ public:
 	/* ICombatInterface战斗接口 */
 	virtual int32 GetPlayerLevel() override;
 	virtual void Die() override;
+
+	virtual AActor* GetCombatTarget_Implementation() const override;
+	virtual void SetCombatTarget_Implementation(AActor* InCombatTarget) override;
 	/* ICombatInterface战斗接口 结束 */
 
 
@@ -56,6 +59,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Combat")
 	float LifeSpan = 5.f; //设置死亡后的存在时间
 
+	UPROPERTY(BlueprintReadWrite, Category="Combat")
+	TObjectPtr<AActor> CombatTarget;
 
 protected:
 	virtual void BeginPlay() override;
