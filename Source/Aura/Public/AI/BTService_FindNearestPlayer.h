@@ -4,13 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "BehaviorTree/Services/BTService_BlueprintBase.h"
-#include "MyBTService_FindNearestPlayer.generated.h"
+#include "BTService_FindNearestPlayer.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class AURA_API UMyBTService_FindNearestPlayer : public UBTService_BlueprintBase
+class AURA_API UBTService_FindNearestPlayer : public UBTService_BlueprintBase
 {
 	GENERATED_BODY()
 protected:
