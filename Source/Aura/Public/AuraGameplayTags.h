@@ -62,6 +62,12 @@ public:
 
 
 	FGameplayTag Abilities_Attack; //攻击技能激活标签
+
+	
+	FGameplayTag Montage_Attack_Weapon; //使用武器攻击蒙太奇标签
+	FGameplayTag Montage_Attack_RightHand; //右手攻击蒙太奇标签
+	FGameplayTag Montage_Attack_LeftHand; //左手攻击蒙太奇标签
+
 	
 
 	TMap<FGameplayTag, FGameplayTag> DamageTypesToResistances;
