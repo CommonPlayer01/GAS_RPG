@@ -59,6 +59,8 @@ void AAuraCharacterBase::MulticastHandleDeath_Implementation()
 
 	//关闭角色碰撞体碰撞通道，避免其对武器和角色模拟物理效果产生影响
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	bDead = true;
 	
 }
 
