@@ -159,7 +159,13 @@ void UAuraAttributeSet::ShowFloatingText(const FEffectProperties& Props, const f
 	//调用显示伤害数字
 	if(Props.SourceCharacter != Props.TargetCharacter)
 	{
+		//从技能释放者身上获取PC并显示伤害数字
 		if(AAuraPlayerController* PC = Cast<AAuraPlayerController>(Props.SourceCharacter->Controller))
+		{
+			PC->ShowDamageNumber(Damage, Props.TargetCharacter, bBlocked, bCriticalHit); //调用显示伤害数字
+		}
+		//从目标身上获取PC并显示伤害数字
+		if(AAuraPlayerController* PC = Cast<AAuraPlayerController>(Props.TargetCharacter->Controller))
 		{
 			PC->ShowDamageNumber(Damage, Props.TargetCharacter, bBlocked, bCriticalHit); //调用显示伤害数字
 		}

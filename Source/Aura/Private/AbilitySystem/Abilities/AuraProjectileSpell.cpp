@@ -37,7 +37,7 @@ void UAuraProjectileSpell::SpawnProjectile(const FVector& ProjectileTargetLocati
 		
 		FTransform SpawnTransform;
 		// 设置投射物的生成位置为战斗插槽的位置
-		SpawnTransform.SetLocation(CombatInterface->GetCombatSocketLocation());
+		SpawnTransform.SetLocation(CombatInterface->Execute_GetCombatSocketLocation(GetAvatarActorFromActorInfo()));
 		// 将调整后的旋转（无俯仰）转换为四元数，并设置为投射物的朝向
 		SpawnTransform.SetRotation(Rotation.Quaternion());
 
@@ -76,7 +76,7 @@ void UAuraProjectileSpell::SpawnProjectile(const FVector& ProjectileTargetLocati
 		// 获取全局 GameplayTags 单例，用于访问预定义的标签
 		FAuraGameplayTags GameplayTags = FAuraGameplayTags::Get();
 
-		for (auto Pair : DamageTags)
+		for (auto Pair : DamageTypes)
 		{
 			const float ScaleDamage = Pair.Value.GetValueAtLevel(GetAbilityLevel());
 			UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(SpecHandle, Pair.Key, ScaleDamage);
