@@ -29,7 +29,7 @@ void UAuraProjectileSpell::SpawnProjectile(const FVector& ProjectileTargetLocati
 	if (ICombatInterface* CombatInterface = Cast<ICombatInterface>(GetAvatarActorFromActorInfo()))
 	{
 		// 获取武器或角色身上用于发射投射物的战斗插槽（Socket）的世界位置
-		const FVector SocketLocation = ICombatInterface::Execute_GetCombatSocketLocation(GetAvatarActorFromActorInfo());
+		const FVector SocketLocation = ICombatInterface::Execute_GetCombatSocketLocation(GetAvatarActorFromActorInfo(), FAuraGameplayTags::Get().Montage_Attack_Weapon);
 		// 计算从插槽位置指向目标位置的方向向量，并将其转换为旋转（FRotator）
 		FRotator Rotation = (ProjectileTargetLocation - SocketLocation).Rotation();
 		// 强制将俯仰角（Pitch）设为 0，使发射方向始终保持水平（平行于地面）
@@ -37,7 +37,7 @@ void UAuraProjectileSpell::SpawnProjectile(const FVector& ProjectileTargetLocati
 		
 		FTransform SpawnTransform;
 		// 设置投射物的生成位置为战斗插槽的位置
-		SpawnTransform.SetLocation(CombatInterface->Execute_GetCombatSocketLocation(GetAvatarActorFromActorInfo()));
+		SpawnTransform.SetLocation(CombatInterface->Execute_GetCombatSocketLocation(GetAvatarActorFromActorInfo(),FAuraGameplayTags::Get().Montage_Attack_Weapon));
 		// 将调整后的旋转（无俯仰）转换为四元数，并设置为投射物的朝向
 		SpawnTransform.SetRotation(Rotation.Quaternion());
 
