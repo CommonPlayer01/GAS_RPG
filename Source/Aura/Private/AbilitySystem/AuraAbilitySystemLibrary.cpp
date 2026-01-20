@@ -216,3 +216,18 @@ void UAuraAbilitySystemLibrary::GetClosestTargets(int32 MaxTargets, const TArray
 
 }
 
+bool UAuraAbilitySystemLibrary::IsNotFriend(AActor* FirstActor, AActor* SecondActor)
+{
+	if(FirstActor->ActorHasTag("Player"))
+	{
+		return !SecondActor->ActorHasTag("Player");
+	}
+
+	if(FirstActor->ActorHasTag("Enemy"))
+	{
+		return !SecondActor->ActorHasTag("Enemy");
+	}
+
+	return false;
+}
+
