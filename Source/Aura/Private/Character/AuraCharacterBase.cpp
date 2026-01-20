@@ -79,6 +79,11 @@ bool AAuraCharacterBase::IsDead_Implementation() const
 	return bDead;
 }
 
+TArray<FTaggedMontage> AAuraCharacterBase::GetAttackMontages_Implementation()
+{
+	return AttackMontage;
+}
+
 // Called when the game starts or when spawned
 void AAuraCharacterBase::BeginPlay()
 {
