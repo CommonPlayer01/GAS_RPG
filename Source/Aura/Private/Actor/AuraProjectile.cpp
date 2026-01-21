@@ -69,15 +69,15 @@ void AAuraProjectile::OnSphereOverlap(
 	const FHitResult& SweepResult)
 {
 
-	if (GetInstigator() == OtherActor)
-	{
-		return;
-	} 
-	// if (DamageEffectHandle.Data.IsValid() && DamageEffectHandle.Data.Get()->GetContext().GetEffectCauser() == OtherActor)
+	// if (GetInstigator() == OtherActor)
 	// {
 	// 	return;
-	// }
-	if (!UAuraAbilitySystemLibrary::IsNotFriend(GetInstigator(), OtherActor))
+	// } 
+	if (!DamageEffectHandle.Data.IsValid() || DamageEffectHandle.Data.Get()->GetContext().GetEffectCauser() == OtherActor)
+	{
+		return;
+	}
+	if (!UAuraAbilitySystemLibrary::IsNotFriend(DamageEffectHandle.Data.Get()->GetContext().GetEffectCauser(), OtherActor))
 	{
 		return;
 	} 

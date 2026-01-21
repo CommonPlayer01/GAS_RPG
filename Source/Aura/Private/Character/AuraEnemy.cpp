@@ -119,6 +119,8 @@ void AAuraEnemy::Die()
 {
 
 	SetLifeSpan(LifeSpan);
+
+	if(AuraAIController) AuraAIController->GetBlackboardComponent()->SetValueAsBool(FName("Dead"), true); //设置死亡，停止AI行为树
 	Super::Die();
 }
 
@@ -137,7 +139,7 @@ void AAuraEnemy::HitReactTagChanged(const FGameplayTag CallbackTag, int32 NewCou
 	bHitReacting = NewCount > 0;
 	GetCharacterMovement()->MaxWalkSpeed = bHitReacting ? 0.f : BaseWalkSpeed;
 	//设置黑板键的值
-	if (AuraAIController->GetBlackboardComponent())
+	if (HasAuthority() && AuraAIController->GetBlackboardComponent())
 	{
 		AuraAIController->GetBlackboardComponent()->SetValueAsBool(FName("HitReacting"), bHitReacting);
 	}
