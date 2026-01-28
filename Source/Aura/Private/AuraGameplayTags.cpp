@@ -233,6 +233,22 @@ void FAuraGameplayTags::InitializeInputGameplayTags()
 			FString("攻击技能标签")
 		);
 
+	GameplayTags.Abilities_Fire_FireBolt = UGameplayTagsManager::Get()
+	.AddNativeGameplayTag(
+		FName("Abilities.Fire.FireBolt"),
+		FString("火球术技能标签")
+		);
+
+	/*
+	 * 冷却
+	 */
+	GameplayTags.Cooldown_Fire_FireBolt = UGameplayTagsManager::Get()
+	.AddNativeGameplayTag(
+		FName("Cooldown.Fire.FireBolt"),
+		FString("火球术冷却标签")
+		);
+
+
 	/*
 	 * Montage
 	*/

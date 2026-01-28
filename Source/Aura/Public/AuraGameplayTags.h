@@ -62,6 +62,10 @@ public:
 
 
 	FGameplayTag Abilities_Attack; //攻击技能激活标签
+	
+	FGameplayTag Abilities_Fire_FireBolt; //火球术技能标签
+	FGameplayTag Cooldown_Fire_FireBolt; //火球术冷却标签
+
 
 	
 	FGameplayTag Montage_Attack_Weapon; //使用武器攻击蒙太奇标签
