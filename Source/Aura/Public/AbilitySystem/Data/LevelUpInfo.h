@@ -36,5 +36,5 @@ public:
 	UPROPERTY(EditDefaultsOnly)
 	TArray<FAuraLevelUpInfo> LevelUpInformation; //当前所有等级的升级数据
 
-	int32 FindLevelForXP(int32 XP); //通过经验值值获取角色的等级
+	int32 FindLevelForXP(int32 XP) const; //通过经验值值获取角色的等级
 };

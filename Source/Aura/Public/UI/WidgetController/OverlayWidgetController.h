@@ -90,6 +90,12 @@ protected:
 
 	void OnInitializeStartupAbilities(UAuraAbilitySystemComponent* RPGAbilitySystemComponent) const; //技能初始化应用后的回调
 
+	UPROPERTY(BlueprintAssignable, Category="GAS|XP")
+	FOnAttributeChangedSignature OnXPPercentChangedDelegate; //经验条百分比变动回调
+
+	void OnXPChanged(int32 NewXP) const; //经验变动后的回调
+
+
 };
 
 //根据传入的表格和Tag返回查找到的数据，表格类型不确定，所以使用T来表示，在使用此函数时，需要指定对应类型
