@@ -35,5 +35,5 @@ float UMMC_MaxMana::CalculateBaseMagnitude_Implementation(const FGameplayEffectS
 	const int32 Level = CombatInterface->GetPlayerLevel();
 
 	//计算最大血量
-	return 50.f + Intelligence * 2.5f + Level * 15.f;
+	return 100.f + Intelligence * 2.5f + Level * 15.f;
 }

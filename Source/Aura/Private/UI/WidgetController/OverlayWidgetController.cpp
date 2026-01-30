@@ -132,7 +132,7 @@ void UOverlayWidgetController::OnXPChanged(int32 NewXP) const
 		const int32 LevelUpRequirement = LevelUpInfo->LevelUpInformation[Level].LevelUpRequirement; //当前等级升级所需经验值
 		const int32 PreviousLevelUpRequirement = LevelUpInfo->LevelUpInformation[Level-1].LevelUpRequirement; //上一级升级所需经验值
 
-		const float XPPercent = static_cast<float>((NewXP - PreviousLevelUpRequirement) / (LevelUpRequirement - PreviousLevelUpRequirement)); //计算经验百分比
+		const float XPPercent = static_cast<float>((NewXP - PreviousLevelUpRequirement) * 1.0 / (LevelUpRequirement - PreviousLevelUpRequirement)); //计算经验百分比
 		OnXPPercentChangedDelegate.Broadcast(XPPercent); //广播经验条比例
 	}
 }

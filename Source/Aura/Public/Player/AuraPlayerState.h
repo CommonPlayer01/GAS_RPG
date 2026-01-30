@@ -53,10 +53,10 @@ protected:
 
 private:
 	UPROPERTY(VisibleAnywhere, ReplicatedUsing=OnRep_Level)
-	int32 Level;
+	int32 Level = 1;
 
 	UPROPERTY(VisibleAnywhere, ReplicatedUsing=OnRep_XP)
-	int32 XP = 0.f;
+	int32 XP = 1.f;
 
 	UFUNCTION()
 	void OnRep_Level(int32 OldLevel) const; //服务器出现更改自动同步到本地函数 等级

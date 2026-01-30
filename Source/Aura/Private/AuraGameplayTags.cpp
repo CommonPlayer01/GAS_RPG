@@ -214,6 +214,15 @@ void FAuraGameplayTags::InitializeInputGameplayTags()
 	GameplayTags.DamageTypesToResistances.Add(GameplayTags.Damage_Physical, GameplayTags.Attributes_Resistance_Physical);
 
 
+	/*
+	 * 元属性
+	 */
+	GameplayTags.Attributes_Meta_IncomingXP = UGameplayTagsManager::Get()
+		.AddNativeGameplayTag(
+			FName("Attributes.Meta.IncomingXP"),
+			FString("经验元属性标签")
+			);
+	
 	GameplayTags.DamageTypes.Add(GameplayTags.Damage_Fire);
 
 
@@ -238,6 +247,8 @@ void FAuraGameplayTags::InitializeInputGameplayTags()
 		FName("Abilities.Fire.FireBolt"),
 		FString("火球术技能标签")
 		);
+
+
 
 	/*
 	 * 冷却

@@ -628,3 +628,50 @@ float UMMC_MaxHealth::CalculateBaseMagnitude_Implementation(const FGameplayEffec
     return 80.f + Vigor * 2.5f + Level * 10.f;
 }
 ```
+
+# 经验获取
+
+>~~~cpp
+>void UAuraAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data){
+>    ```
+>    SendXPEvent(Props);
+>    ```
+>}
+>~~~
+>
+>>```c
+>>void UAuraAttributeSet::SendXPEvent(const FEffectProperties& Props){
+>>    ```
+>>    UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(Props.SourceCharacter, 
+>>                                                         GameplayTags.Attributes_Meta_IncomingXP, 
+>>                                                         Payload);
+>>    ```
+>>}
+>>
+>>```
+
+
+
+# 
+
+>~~~cpp
+>void UAuraAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data){
+>    ```
+>    IPlayerInterface::Execute_AddToXP(Props.SourceCharacter, LocalIncomingXP);
+>    ```
+>}
+>~~~
+>
+>>```c
+>>void AAuraPlayerState::SetLevel(int32 InLevel)
+>>{
+>>	Level = InLevel;
+>>	OnLevelChangedDelegate.Broadcast(Level);
+>>}
+>>
+>>```
+>>
+>>>
+>>>
+>>>
+

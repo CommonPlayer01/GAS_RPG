@@ -186,6 +186,10 @@ public:
 	FGameplayAttributeData IncomingDamage; //处理传入的伤害
 	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, IncomingDamage);
 
+	UPROPERTY(BlueprintReadOnly, Category="Meta Attributes")
+	FGameplayAttributeData IncomingXP; //处理传入的伤害
+	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, IncomingXP);
+
 	
 	UFUNCTION()
 	void OnRep_Strength(const FGameplayAttributeData& OldStrength) const;
@@ -256,5 +260,8 @@ public:
 private:
 	static void SetEffectProperties(const FGameplayEffectModCallbackData& Data, FEffectProperties& Props);
 	static void ShowFloatingText(const FEffectProperties& Props, const float Damage, bool bBlocked, bool bCriticalHit);
+
+	//发送经验事件
+	void SendXPEvent(const FEffectProperties& Props);
 
 };

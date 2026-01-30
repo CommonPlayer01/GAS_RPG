@@ -45,6 +45,9 @@ public:
 	FGameplayTag Attributes_Resistance_Arcane; //魔法伤害抵抗 标签
 	FGameplayTag Attributes_Resistance_Physical; //物理伤害抵抗 标签
 
+	//元属性
+	FGameplayTag Attributes_Meta_IncomingXP; //元属性经验 标签
+	
 
 	FGameplayTag InputTag_LMB; //鼠标左键
 	FGameplayTag InputTag_RMB; //鼠标右键
@@ -65,19 +68,16 @@ public:
 	
 	FGameplayTag Abilities_Fire_FireBolt; //火球术技能标签
 	FGameplayTag Cooldown_Fire_FireBolt; //火球术冷却标签
-
-
 	
 	FGameplayTag Montage_Attack_Weapon; //使用武器攻击蒙太奇标签
 	FGameplayTag Montage_Attack_RightHand; //右手攻击蒙太奇标签
 	FGameplayTag Montage_Attack_LeftHand; //左手攻击蒙太奇标签
-
 	
 
 	TMap<FGameplayTag, FGameplayTag> DamageTypesToResistances;
-
-
+	
 	FGameplayTag Effects_HitReact; //受击 标签
+
 
 
 	//阻止输入相关事件触发

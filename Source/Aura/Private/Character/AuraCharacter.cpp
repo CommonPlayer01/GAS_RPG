@@ -21,6 +21,9 @@ AAuraCharacter::AAuraCharacter()
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationRoll = false;
 	bUseControllerRotationYaw = false;
+
+	//设置玩家职业
+	CharacterClass = ECharacterClass::Elementalist;
 }
 
 void AAuraCharacter::PossessedBy(AController* NewController)
@@ -39,6 +42,13 @@ void AAuraCharacter::OnRep_PlayerState()
 	Super::OnRep_PlayerState();
 	//初始化ASC的OwnerActor和AvatarActor
 	InitAbilityActorInfo();
+}
+
+void AAuraCharacter::AddToXP_Implementation(int32 InXP)
+{
+	AAuraPlayerState* PlayerStateBase = GetPlayerState<AAuraPlayerState>();
+	check(PlayerStateBase); //检测是否有效，无限会暂停游
+	PlayerStateBase->AddToXP(InXP);
 }
 
 int32 AAuraCharacter::GetPlayerLevel()

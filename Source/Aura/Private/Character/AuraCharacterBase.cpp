@@ -26,6 +26,8 @@ AAuraCharacterBase::AAuraCharacterBase()
 	Weapon->SetupAttachment(GetMesh(), FName("WeaponHandSocket"));
 	Weapon->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
+
+
 }
 
 UAbilitySystemComponent* AAuraCharacterBase::GetAbilitySystemComponent() const
@@ -85,6 +87,11 @@ TArray<FTaggedMontage> AAuraCharacterBase::GetAttackMontages_Implementation()
 	return AttackMontage;
 }
 
+ECharacterClass AAuraCharacterBase::GetCharacterClass_Implementation()
+{
+	return CharacterClass;
+}
+
 // Called when the game starts or when spawned
 void AAuraCharacterBase::BeginPlay()
 {
@@ -133,7 +140,7 @@ void AAuraCharacterBase::AddCharacterAbilities() const
 	if(!HasAuthority()) return; //查询是否拥有网络权限，应用技能需要添加给服务器
 
 	ASC->AddCharacterAbilities(StartupAbilities);
-
+	ASC->AddCharacterPassiveAbilities(StartupPassiveAbilities);
 }
 
 FVector AAuraCharacterBase::GetCombatSocketLocation_Implementation(const FGameplayTag& MontageTag) const
