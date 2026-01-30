@@ -159,9 +159,34 @@ void UAuraAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallba
 		const float LocalIncomingXP = GetIncomingXP();
 		SetIncomingXP(0);
 
-		//将经验应用给自身
-		if(Props.SourceCharacter->Implements<UPlayerInterface>())
+		if(Props.SourceCharacter->Implements<UPlayerInterface>() && Props.SourceCharacter->Implements<UCombatInterface>())
 		{
+			//获取角色当前等级和经验
+			const int32 CurrentLevel = ICombatInterface::Execute_GetPlayerLevel(Props.SourceCharacter);
+			const int32 CurrentXP = IPlayerInterface::Execute_GetXP(Props.SourceCharacter);
+
+			//获取获得经验后的新等级
+			const int32 NewLevel = IPlayerInterface::Execute_FindLevelForXP(Props.SourceCharacter, CurrentXP + LocalIncomingXP);
+			const int32 NumLevelUps = NewLevel - CurrentLevel; //查看等级是否有变化
+			if(NumLevelUps > 0)
+			{
+				//获取升级提供的技能点和属性点
+				int32 AttributePointsReward = IPlayerInterface::Execute_GetAttributePointsReward(Props.SourceCharacter, CurrentLevel);
+				int32 SpellPointsReward = IPlayerInterface::Execute_GetSpellPointsReward(Props.SourceCharacter, CurrentLevel);
+
+				//提升等级，增加角色技能点和属性点
+				IPlayerInterface::Execute_AddToPlayerLevel(Props.SourceCharacter, NumLevelUps);
+				IPlayerInterface::Execute_AddToAttributePoints(Props.SourceCharacter, AttributePointsReward);
+				IPlayerInterface::Execute_AddToSpellPoints(Props.SourceCharacter, SpellPointsReward);
+
+				IPlayerInterface::Execute_LevelUp(Props.SourceCharacter); //升级
+
+				//将血量和蓝量填充满
+				SetHealth(GetMaxHealth());
+				SetMana(GetMana());
+			}
+			
+			//将经验应用给自身，通过事件传递，在玩家角色被动技能GA_ListenForEvents里接收
 			IPlayerInterface::Execute_AddToXP(Props.SourceCharacter, LocalIncomingXP);
 		}
 	}
@@ -188,10 +213,10 @@ void UAuraAttributeSet::ShowFloatingText(const FEffectProperties& Props, const f
 
 void UAuraAttributeSet::SendXPEvent(const FEffectProperties& Props)
 {
-	if(ICombatInterface* CombatInterface = Cast<ICombatInterface>(Props.TargetCharacter))
+	if(Props.TargetCharacter->Implements<UCombatInterface>())
 	{
 		//从战斗接口获取等级和职业，通过蓝图函数获取可提供的经验值
-		const int32 TargetLevel = CombatInterface->GetPlayerLevel();
+		const int32 TargetLevel = ICombatInterface::Execute_GetPlayerLevel(Props.TargetCharacter);
 		const ECharacterClass TargetClass = ICombatInterface::Execute_GetCharacterClass(Props.TargetCharacter); //c++内调用BlueprintNativeEvent函数需要这样调用
 		const int32 XPReward = UAuraAbilitySystemLibrary::GetXPRewardForClassAndLevel(Props.TargetCharacter, TargetClass, TargetLevel);
 

@@ -30,7 +30,7 @@ public:
 	/* IEnemyInterface敌人接口 */
 
 	/* ICombatInterface战斗接口 */
-	virtual int32 GetPlayerLevel() override;
+	virtual int32 GetPlayerLevel_Implementation() override;
 	virtual void Die() override;
 
 	virtual AActor* GetCombatTarget_Implementation() const override;

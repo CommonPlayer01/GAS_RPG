@@ -5,6 +5,7 @@
 
 #include "AbilitySystemComponent.h"
 #include "AbilitySystem/AuraAbilitySystemComponent.h"
+#include "AbilitySystem/Data/LevelUpInfo.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Player/AuraPlayerController.h"
 #include "Player/AuraPlayerState.h"
@@ -51,12 +52,59 @@ void AAuraCharacter::AddToXP_Implementation(int32 InXP)
 	PlayerStateBase->AddToXP(InXP);
 }
 
-int32 AAuraCharacter::GetPlayerLevel()
+void AAuraCharacter::LevelUp_Implementation()
+{
+	
+}
+
+int32 AAuraCharacter::GetXP_Implementation() const
+{
+	const AAuraPlayerState* PlayerStateBase = GetPlayerState<AAuraPlayerState>();
+	check(PlayerStateBase); //检测是否有效，无限会暂停游戏
+	return PlayerStateBase->GetXP();
+}
+int32 AAuraCharacter::FindLevelForXP_Implementation(const int32 InXP) const
+{
+	const AAuraPlayerState* PlayerStateBase = GetPlayerState<AAuraPlayerState>();
+	check(PlayerStateBase); //检测是否有效，无限会暂停游戏
+	return PlayerStateBase->LevelUpInfo->FindLevelForXP(InXP);
+}
+
+int32 AAuraCharacter::GetAttributePointsReward_Implementation(const int32 Level) const
+{
+	const AAuraPlayerState* PlayerStateBase = GetPlayerState<AAuraPlayerState>();
+	check(PlayerStateBase); //检测是否有效，无限会暂停游戏
+	return PlayerStateBase->LevelUpInfo->LevelUpInformation[Level].AttributePointAward;
+}
+int32 AAuraCharacter::GetSpellPointsReward_Implementation(const int32 Level) const
+{
+	const AAuraPlayerState* PlayerStateBase = GetPlayerState<AAuraPlayerState>();
+	check(PlayerStateBase); //检测是否有效，无限会暂停游戏
+	return PlayerStateBase->LevelUpInfo->LevelUpInformation[Level].SpellPointAward;
+}
+void AAuraCharacter::AddToPlayerLevel_Implementation(int32 InPlayerLevel)
+{
+	AAuraPlayerState* PlayerStateBase = GetPlayerState<AAuraPlayerState>();
+	check(PlayerStateBase); //检测是否有效，无限会暂停游戏
+	PlayerStateBase->AddToLevel(InPlayerLevel);
+}
+void AAuraCharacter::AddToAttributePoints_Implementation(int32 InAttributePoints)
+{
+	//TODO:实现增加属性点
+}
+
+void AAuraCharacter::AddToSpellPoints_Implementation(int32 InSpellPoints)
+{
+	//TODO:实现增加技能点
+}
+
+
+
+int32 AAuraCharacter::GetPlayerLevel_Implementation()
 {
 	const AAuraPlayerState* PlayerStateBase = GetPlayerState<AAuraPlayerState>();
 	check(PlayerStateBase); //检测是否有效，无效会暂停游戏
 	return PlayerStateBase->GetPlayerLevel();
-
 }
 
 void AAuraCharacter::InitAbilityActorInfo()

@@ -21,20 +21,22 @@ float UMMC_MaxHealth::CalculateBaseMagnitude_Implementation(const FGameplayEffec
 	//  从 source 和 target 获取 Tag
 	const FGameplayTagContainer* SourceTags = Spec.CapturedSourceTags.GetAggregatedTags();
 	const FGameplayTagContainer* TargetTags = Spec.CapturedTargetTags.GetAggregatedTags();
-
+	
 	FAggregatorEvaluateParameters EvaluateParameters;
 	EvaluateParameters.SourceTags = SourceTags;
 	EvaluateParameters.TargetTags = TargetTags;
-
+	
 	//获取体力值
 	float Vigor = 0.f;
 	GetCapturedAttributeMagnitude(VigorDef, Spec, EvaluateParameters, Vigor);
 	Vigor = FMath::Max<float>(Vigor, 0.f);
 
-	//获取等级
-	ICombatInterface* CombatInterface = Cast<ICombatInterface>(Spec.GetContext().GetSourceObject());
-	const int32 Level = CombatInterface->GetPlayerLevel();
+	int PlayerLevel = 1;
+	if (Spec.GetContext().GetSourceObject()->Implements<UCombatInterface>())
+	{
+		PlayerLevel = ICombatInterface::Execute_GetPlayerLevel(Spec.GetContext().GetSourceObject());
+	}
 
 	//计算最大血量
-	return 80.f + Vigor * 2.5f + Level * 10.f;
+	return 80.f + Vigor * 2.5f + PlayerLevel * 10.f;
 }
