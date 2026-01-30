@@ -30,6 +30,11 @@ void UOverlayWidgetController::BindCallbacksToDependencies()
 
 	//绑定等级相关回调
 	AuraPlayerState->OnXPChangedDelegate.AddUObject(this, &ThisClass::OnXPChanged);
+	//绑定等级相关回调
+	AuraPlayerState->OnLevelChangedDelegate.AddLambda([this](int32 NewLevel)
+	{
+		OnPlayerLevelChangeDelegate.Broadcast(NewLevel);
+	});
 
 	
 	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(

@@ -28,6 +28,7 @@ struct FUIWidgetRow : public FTableRowBase
 	UTexture2D* Image = nullptr;
 };
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPlayerStateChangedSignature, int32, NewValue); //当玩家状态该表回调类型
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAttributeChangedSignature, float, NewAttribute);
 // DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnHealthChangedSignature, float, NewHealth);
 // DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnMaxHealthChangedSignature,float, NewMaxHealth);
@@ -69,6 +70,13 @@ public:
 	UPROPERTY(BlueprintAssignable, Category="GAS|Messages")
 	FAbilityInfoSignature AbilityInfoDelegate;
 
+	UPROPERTY(BlueprintAssignable, Category="GAS|XP")
+	FOnAttributeChangedSignature OnXPPercentChangedDelegate; //经验条百分比变动回调
+
+	UPROPERTY(BlueprintAssignable, Category="GAS|Level")
+	FOnPlayerStateChangedSignature OnPlayerLevelChangeDelegate; //等级变动回调
+
+
 
 protected:
 
@@ -90,8 +98,7 @@ protected:
 
 	void OnInitializeStartupAbilities(UAuraAbilitySystemComponent* RPGAbilitySystemComponent) const; //技能初始化应用后的回调
 
-	UPROPERTY(BlueprintAssignable, Category="GAS|XP")
-	FOnAttributeChangedSignature OnXPPercentChangedDelegate; //经验条百分比变动回调
+
 
 	void OnXPChanged(int32 NewXP) const; //经验变动后的回调
 
