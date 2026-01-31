@@ -108,12 +108,16 @@ void AAuraCharacter::AddToPlayerLevel_Implementation(int32 InPlayerLevel)
 }
 void AAuraCharacter::AddToAttributePoints_Implementation(int32 InAttributePoints)
 {
-	//TODO:实现增加属性点
+	AAuraPlayerState* PlayerStateBase = GetPlayerState<AAuraPlayerState>();
+	check(PlayerStateBase); //检测是否有效，无限会暂停游戏
+	PlayerStateBase->AddToAttributePoints(InAttributePoints);
 }
 
 void AAuraCharacter::AddToSpellPoints_Implementation(int32 InSpellPoints)
 {
-	//TODO:实现增加技能点
+	AAuraPlayerState* PlayerStateBase = GetPlayerState<AAuraPlayerState>();
+	check(PlayerStateBase); //检测是否有效，无限会暂停游戏
+	PlayerStateBase->AddToSpellPoints(InSpellPoints);
 }
 
 
