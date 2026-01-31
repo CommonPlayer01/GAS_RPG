@@ -7,6 +7,9 @@
 #include "Interaction/PlayerInterface.h"
 #include "AuraCharacter.generated.h"
 
+class USpringArmComponent;
+class UCameraComponent;
+class UNiagaraComponent;
 /**
  * 
  */
@@ -37,7 +40,21 @@ public:
 	virtual int32 GetPlayerLevel_Implementation() override;
 	/* ICombatInterface战斗接口 结束 */
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	TObjectPtr<UNiagaraComponent> LevelUpNiagaraComponent; //升级特效组件
+
 	
 private:
 	virtual void InitAbilityActorInfo() override;
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UCameraComponent> TopDownCameraComponent; //相机组件
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<USpringArmComponent> CameraBoom; //弹簧臂组件
+
+	
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastLevelUpParticles() const; //在多人游戏，每个客户端上播放升级特效
+
 };

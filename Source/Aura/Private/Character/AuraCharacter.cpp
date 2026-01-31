@@ -4,15 +4,33 @@
 #include "Character/AuraCharacter.h"
 
 #include "AbilitySystemComponent.h"
+#include "NiagaraComponent.h"
 #include "AbilitySystem/AuraAbilitySystemComponent.h"
 #include "AbilitySystem/Data/LevelUpInfo.h"
+#include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "GameFramework/SpringArmComponent.h"
 #include "Player/AuraPlayerController.h"
 #include "Player/AuraPlayerState.h"
 #include "UI/HUD/AuraHUD.h"
 
 AAuraCharacter::AAuraCharacter()
 {
+	//设置相机
+	CameraBoom = CreateDefaultSubobject<USpringArmComponent>("CameraBoom");
+	CameraBoom->SetupAttachment(GetRootComponent());
+	CameraBoom->SetUsingAbsoluteRotation(true);	
+	CameraBoom->bDoCollisionTest = false;
+
+	TopDownCameraComponent = CreateDefaultSubobject<UCameraComponent>("TopDownCameraComponent");
+	TopDownCameraComponent->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
+	TopDownCameraComponent->bUsePawnControlRotation = false;
+
+	//设置升级特效组件
+	LevelUpNiagaraComponent = CreateDefaultSubobject<UNiagaraComponent>("LevelUpNiagaraComponent");
+	LevelUpNiagaraComponent->SetupAttachment(GetRootComponent()); //设置附加组件
+	LevelUpNiagaraComponent->bAutoActivate = false; //设置不自动激活
+
 	GetCharacterMovement()->bOrientRotationToMovement = true; //设置为true，角色将朝移动的方向旋转
 	GetCharacterMovement()->RotationRate = FRotator(0.f, 400.f, 0.f); //旋转速率
 	GetCharacterMovement()->bConstrainToPlane = true; //约束到平面
@@ -54,7 +72,7 @@ void AAuraCharacter::AddToXP_Implementation(int32 InXP)
 
 void AAuraCharacter::LevelUp_Implementation()
 {
-	
+	MulticastLevelUpParticles(); //调用播放升级特效
 }
 
 int32 AAuraCharacter::GetXP_Implementation() const
@@ -129,4 +147,16 @@ void AAuraCharacter::InitAbilityActorInfo()
 
 	//通过GE初始角色主要属性
 	InitializeDefaultAttributes();
+}
+
+void AAuraCharacter::MulticastLevelUpParticles_Implementation() const
+{
+	if(IsValid(LevelUpNiagaraComponent))
+	{
+		const FVector CameraLocation = TopDownCameraComponent->GetComponentLocation();
+		const FVector NiagaraSystemLocation = LevelUpNiagaraComponent->GetComponentLocation();
+		const FRotator TopCameraRotation = (CameraLocation - NiagaraSystemLocation).Rotation(); //获取相机位置和离职特效的朝向
+		LevelUpNiagaraComponent->SetWorldRotation(TopCameraRotation); //设置粒子的转向
+		LevelUpNiagaraComponent->Activate(true); //激活特效
+	}
 }
