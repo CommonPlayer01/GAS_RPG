@@ -27,6 +27,9 @@ public:
 	
 	UPROPERTY(BlueprintAssignable, Category="GAS|Attributes")//设置BlueprintAssignable可以在蓝图作为委托绑定监听
 	FOnPlayerStateChangedSignature AttributePointsChangedDelegate;
+	
+	UFUNCTION(BlueprintCallable, Category="GAS|Attributes")
+	void UpgradeAttribute(const FGameplayTag& AttributeTag); //升级属性
 
 protected:
 

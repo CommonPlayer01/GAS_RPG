@@ -22,8 +22,8 @@ UAuraAttributeSet::UAuraAttributeSet()
 
 	TagsToAttributes.Add(GameplayTags.Attributes_Primary_Strength, GetStrengthAttribute);
 	TagsToAttributes.Add(GameplayTags.Attributes_Primary_Intelligence, GetIntelligenceAttribute);
-	TagsToAttributes.Add(GameplayTags.Attributes_Primary_Resilience, GetIntelligenceAttribute);
-	TagsToAttributes.Add(GameplayTags.Attributes_Primary_Vigor, GetIntelligenceAttribute);
+	TagsToAttributes.Add(GameplayTags.Attributes_Primary_Resilience, GetResilienceAttribute);
+	TagsToAttributes.Add(GameplayTags.Attributes_Primary_Vigor, GetVigorAttribute);
 	
 	TagsToAttributes.Add(GameplayTags.Attributes_Secondary_MaxHealth, GetMaxHealthAttribute);
 	TagsToAttributes.Add(GameplayTags.Attributes_Secondary_MaxMana, GetMaxManaAttribute);
@@ -182,8 +182,10 @@ void UAuraAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallba
 				IPlayerInterface::Execute_LevelUp(Props.SourceCharacter); //升级
 
 				//将血量和蓝量填充满
-				SetHealth(GetMaxHealth());
-				SetMana(GetMana());
+				//将血量和蓝量填充满, 我们将设置变量
+				bFillHealth = true;
+				bFillMana = true;
+
 			}
 			
 			//将经验应用给自身，通过事件传递，在玩家角色被动技能GA_ListenForEvents里接收
@@ -191,6 +193,22 @@ void UAuraAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallba
 		}
 	}
 
+}
+
+void UAuraAttributeSet::PostAttributeChange(const FGameplayAttribute& Attribute, float OldValue, float NewValue)
+{
+	Super::PostAttributeChange(Attribute, OldValue, NewValue);
+	if(Attribute == GetMaxHealthAttribute() && bFillHealth)
+	{
+		SetHealth(GetMaxHealth());
+		bFillHealth = false;
+	}
+
+	if(Attribute == GetMaxManaAttribute() && bFillMana)
+	{
+		SetMana(GetMaxMana());
+		bFillMana = false;
+	}
 }
 
 void UAuraAttributeSet::ShowFloatingText(const FEffectProperties& Props, const float Damage, bool bBlocked, bool bCriticalHit)

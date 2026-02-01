@@ -67,6 +67,8 @@ public:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	virtual void PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue) override;
 	virtual void PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data) override;
+	
+	virtual void PostAttributeChange(const FGameplayAttribute& Attribute, float OldValue, float NewValue) override; //属性变动后回调函数
 
 
 
@@ -216,7 +218,6 @@ public:
 	UFUNCTION()
 	void OnRep_MaxMana(const FGameplayAttributeData& OldMaxMana) const;
 	
-
 	UFUNCTION()
 	void OnRep_FireResistance(const FGameplayAttributeData& OldFireResistance) const;
 
@@ -228,8 +229,6 @@ public:
 
 	UFUNCTION()
 	void OnRep_PhysicalResistance(const FGameplayAttributeData& OldPhysicalResistance) const;
-
-
 	
 	UFUNCTION()
 	void OnRep_Armor(const FGameplayAttributeData& OldArmor) const;
@@ -263,5 +262,7 @@ private:
 
 	//发送经验事件
 	void SendXPEvent(const FEffectProperties& Props);
-
+	//将血量和蓝量填充满, 我们将设置变量
+	bool bFillHealth = true;
+	bool bFillMana = true;
 };

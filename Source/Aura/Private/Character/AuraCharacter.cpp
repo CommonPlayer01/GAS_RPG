@@ -106,11 +106,26 @@ void AAuraCharacter::AddToPlayerLevel_Implementation(int32 InPlayerLevel)
 	check(PlayerStateBase); //检测是否有效，无限会暂停游戏
 	PlayerStateBase->AddToLevel(InPlayerLevel);
 }
+
+int32 AAuraCharacter::GetAttributePoints_Implementation() const
+{
+	const AAuraPlayerState* PlayerStateBase = GetPlayerState<AAuraPlayerState>();
+	check(PlayerStateBase); //检测是否有效，无限会暂停游戏
+	return PlayerStateBase->GetAttributePoints();
+}
+
 void AAuraCharacter::AddToAttributePoints_Implementation(int32 InAttributePoints)
 {
 	AAuraPlayerState* PlayerStateBase = GetPlayerState<AAuraPlayerState>();
 	check(PlayerStateBase); //检测是否有效，无限会暂停游戏
 	PlayerStateBase->AddToAttributePoints(InAttributePoints);
+}
+
+int32 AAuraCharacter::GetSpellPoints_Implementation() const
+{
+	const AAuraPlayerState* PlayerStateBase = GetPlayerState<AAuraPlayerState>();
+	check(PlayerStateBase); //检测是否有效，无限会暂停游戏
+	return PlayerStateBase->GetSpellPoints();
 }
 
 void AAuraCharacter::AddToSpellPoints_Implementation(int32 InSpellPoints)
