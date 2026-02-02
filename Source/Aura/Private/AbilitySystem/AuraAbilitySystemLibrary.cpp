@@ -12,7 +12,8 @@
 #include "UI/HUD/AuraHUD.h"
 #include "UI/WidgetController/AuraWidgetController.h"
 
-UOverlayWidgetController* UAuraAbilitySystemLibrary::GetOverlayWidgetController(const UObject* WorldContextObject)
+bool UAuraAbilitySystemLibrary::MakeWidgetControllerParams(const UObject* WorldContextObject,
+	FWidgetControllerParams& OutWcParams, AAuraHUD*& OutAuraHUD)
 {
 	//获取到playerController， 需要传入一个世界空间上下文的对象，用于得到对应世界中的PC列表，0为本地使用的PC
 	if(APlayerController* PC = UGameplayStatics::GetPlayerController(WorldContextObject, 0))
@@ -20,36 +21,54 @@ UOverlayWidgetController* UAuraAbilitySystemLibrary::GetOverlayWidgetController(
 		//从PC获取到HUD，我们就可以从HUD获得对应的Controller
 		if(AAuraHUD* HUD = Cast<AAuraHUD>(PC->GetHUD()))
 		{
+			OutAuraHUD = HUD; //修改指针的引用
 			AAuraPlayerState* PS = PC->GetPlayerState<AAuraPlayerState>();
-			UAbilitySystemComponent* ASC = PS->GetAbilitySystemComponent();
-			UAttributeSet* AS = PS->GetAttributeSet();
-			const FWidgetControllerParams WidgetControllerParams(PC, PS, ASC, AS);
-			return HUD->GetOverlayWidgetController(WidgetControllerParams);
+			//设置参数
+			OutWcParams.PlayerController = PC;
+			OutWcParams.PlayerState = PS;
+			OutWcParams.AbilitySystemComponent = PS->GetAbilitySystemComponent();
+			OutWcParams.AttributeSet = PS->GetAttributeSet();
+			return true;
 		}
+	}
+	return false;
+}
+
+UOverlayWidgetController* UAuraAbilitySystemLibrary::GetOverlayWidgetController(const UObject* WorldContextObject)
+{
+	FWidgetControllerParams WCParams;
+	AAuraHUD* HUD = nullptr;
+	if(MakeWidgetControllerParams(WorldContextObject, WCParams, HUD))
+	{
+		return HUD->GetOverlayWidgetController(WCParams);
 	}
 	return nullptr;
 }
 
 UAttributeMenuWidgetController* UAuraAbilitySystemLibrary::GetAttributeMenuWidgetController(const UObject* WorldContextObject)
 {
-	//获取到playerController， 需要传入一个世界空间上下文的对象，用于得到对应世界中的PC列表，0为本地使用的PC
-	if(APlayerController* PC = UGameplayStatics::GetPlayerController(WorldContextObject, 0))
+	FWidgetControllerParams WCParams;
+	AAuraHUD* HUD = nullptr;
+	if(MakeWidgetControllerParams(WorldContextObject, WCParams, HUD))
 	{
-		//从PC获取到HUD，我们就可以从HUD获得对应的Controller
-		if(AAuraHUD* HUD = Cast<AAuraHUD>(PC->GetHUD()))
-		{
-			AAuraPlayerState* PS = PC->GetPlayerState<AAuraPlayerState>();
-			UAbilitySystemComponent* ASC = PS->GetAbilitySystemComponent();
-			UAttributeSet* AS = PS->GetAttributeSet();
-			const FWidgetControllerParams WidgetControllerParams(PC, PS, ASC, AS);
-			return HUD->GetAttributeMenuWidgetController(WidgetControllerParams);
-		}
+		return HUD->GetAttributeMenuWidgetController(WCParams);
+	}
+	return nullptr;
+}
+
+USpellMenuWidgetController* UAuraAbilitySystemLibrary::GetSpellMenuWidgetController(const UObject* WorldContextObject)
+{
+	FWidgetControllerParams WCParams;
+	AAuraHUD* HUD = nullptr;
+	if(MakeWidgetControllerParams(WorldContextObject, WCParams, HUD))
+	{
+		return HUD->GetSpellMenuWidgetController(WCParams);
 	}
 	return nullptr;
 }
 
 void UAuraAbilitySystemLibrary::InitializeDefaultAttributes(const UObject* WorldContextObject,
-	ECharacterClass CharacterClass, float Level, UAbilitySystemComponent* ASC)
+                                                            ECharacterClass CharacterClass, float Level, UAbilitySystemComponent* ASC)
 {
 	AActor* AvatorActor = ASC->GetAvatarActor();
 	
@@ -123,33 +142,33 @@ UCharacterClassInfo* UAuraAbilitySystemLibrary::GetCharacterClassInfo(const UObj
 
 bool UAuraAbilitySystemLibrary::IsBlockedHit(const FGameplayEffectContextHandle& EffectContextHandle)
 {
-	if(const FAuraGameplayEffectContext* RPGEffectContext = static_cast<const FAuraGameplayEffectContext*>(EffectContextHandle.Get()))
+	if(const FAuraGameplayEffectContext* AuraEffectContext = static_cast<const FAuraGameplayEffectContext*>(EffectContextHandle.Get()))
 	{
-		return RPGEffectContext->IsBlockedHit();
+		return AuraEffectContext->IsBlockedHit();
 	}
 	return false;
 }
 
 bool UAuraAbilitySystemLibrary::IsCriticalHit(const FGameplayEffectContextHandle& EffectContextHandle)
 {
-	if(const FAuraGameplayEffectContext* RPGEffectContext = static_cast<const FAuraGameplayEffectContext*>(EffectContextHandle.Get()))
+	if(const FAuraGameplayEffectContext* AuraEffectContext = static_cast<const FAuraGameplayEffectContext*>(EffectContextHandle.Get()))
 	{
-		return RPGEffectContext->IsCriticalHit();
+		return AuraEffectContext->IsCriticalHit();
 	}
 	return false;
 }
 
 void UAuraAbilitySystemLibrary::SetIsBlockHit(FGameplayEffectContextHandle& EffectContextHandle, bool bInIsBlockedHit)
 {
-	FAuraGameplayEffectContext* RPGEffectContext = static_cast<FAuraGameplayEffectContext*>(EffectContextHandle.Get());
-	RPGEffectContext->SetIsBlockedHit(bInIsBlockedHit);
+	FAuraGameplayEffectContext* AuraEffectContext = static_cast<FAuraGameplayEffectContext*>(EffectContextHandle.Get());
+	AuraEffectContext->SetIsBlockedHit(bInIsBlockedHit);
 }
 
 void UAuraAbilitySystemLibrary::SetIsCriticalHit(FGameplayEffectContextHandle& EffectContextHandle,
 	bool bInIsCriticalHit)
 {
-	FAuraGameplayEffectContext* RPGEffectContext = static_cast<FAuraGameplayEffectContext*>(EffectContextHandle.Get());
-	RPGEffectContext->SetIsCriticalHit(bInIsCriticalHit);
+	FAuraGameplayEffectContext* AuraEffectContext = static_cast<FAuraGameplayEffectContext*>(EffectContextHandle.Get());
+	AuraEffectContext->SetIsCriticalHit(bInIsCriticalHit);
 
 }
 

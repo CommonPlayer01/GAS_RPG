@@ -7,7 +7,7 @@
 #include "AuraAbilitySystemComponent.generated.h"
  
 DECLARE_MULTICAST_DELEGATE_OneParam(FEffectAssetTags, const FGameplayTagContainer& /* AssetTags */)
-DECLARE_MULTICAST_DELEGATE_OneParam(FAbilityGiven, UAuraAbilitySystemComponent*) //技能初始化应用后的回调委托
+DECLARE_MULTICAST_DELEGATE(FAbilityGiven) //技能初始化应用后的回调委托
 DECLARE_DELEGATE_OneParam(FForEachAbility, const FGameplayAbilitySpec&); //单播委托，只能绑定一个回调
 
 

@@ -11,13 +11,12 @@
 void UOverlayWidgetController::BroadcastInitialValues()
 {
 	Super::BroadcastInitialValues();
-	const UAuraAttributeSet* AttributeSetBase = CastChecked<UAuraAttributeSet>(AttributeSet);
 
-	OnHealthChanged.Broadcast(AttributeSetBase->GetHealth());
-	OnMaxHealthChanged.Broadcast(AttributeSetBase->GetMaxHealth());
+	OnHealthChanged.Broadcast(GetAuraAS()->GetHealth());
+	OnMaxHealthChanged.Broadcast(GetAuraAS()->GetMaxHealth());
 
-	OnManaChanged.Broadcast(AttributeSetBase->GetMana());
-	OnMaxManaChanged.Broadcast(AttributeSetBase->GetMaxMana());
+	OnManaChanged.Broadcast(GetAuraAS()->GetMana());
+	OnMaxManaChanged.Broadcast(GetAuraAS()->GetMaxMana());
 
 }
 
@@ -25,41 +24,38 @@ void UOverlayWidgetController::BindCallbacksToDependencies()
 {
 	Super::BindCallbacksToDependencies();
 
-	const UAuraAttributeSet* AttributeSetBase = CastChecked<UAuraAttributeSet>(AttributeSet);
-	AAuraPlayerState* AuraPlayerState = CastChecked<AAuraPlayerState>(PlayerState);
-
 	//绑定等级相关回调
-	AuraPlayerState->OnXPChangedDelegate.AddUObject(this, &ThisClass::OnXPChanged);
+	GetAuraPS()->OnXPChangedDelegate.AddUObject(this, &ThisClass::OnXPChanged);
 	//绑定等级相关回调
-	AuraPlayerState->OnLevelChangedDelegate.AddLambda([this](int32 NewLevel)
+	GetAuraPS()->OnLevelChangedDelegate.AddLambda([this](int32 NewLevel)
 	{
 		OnPlayerLevelChangeDelegate.Broadcast(NewLevel);
 	});
 
 	
 	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(
-		AttributeSetBase->GetHealthAttribute()).AddUObject(this, &UOverlayWidgetController::HealthChanged);
+		GetAuraAS()->GetHealthAttribute()).AddUObject(this, &UOverlayWidgetController::HealthChanged);
 
 	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(
-		AttributeSetBase->GetMaxHealthAttribute()).AddUObject(this, &UOverlayWidgetController::MaxHealthChanged);
+		GetAuraAS()->GetMaxHealthAttribute()).AddUObject(this, &UOverlayWidgetController::MaxHealthChanged);
 
 	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(
-		AttributeSetBase->GetManaAttribute()).AddUObject(this, &UOverlayWidgetController::ManaChanged);
+		GetAuraAS()->GetManaAttribute()).AddUObject(this, &UOverlayWidgetController::ManaChanged);
 
 	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(
-		AttributeSetBase->GetMaxManaAttribute()).AddUObject(this, &UOverlayWidgetController::MaxManaChanged);
+		GetAuraAS()->GetMaxManaAttribute()).AddUObject(this, &UOverlayWidgetController::MaxManaChanged);
 
-	if(UAuraAbilitySystemComponent* AuraSAC = Cast<UAuraAbilitySystemComponent>(AbilitySystemComponent))
+	if(GetAuraASC())
 	{
-		if(AuraSAC->bStartupAbilitiesGiven)
+		if(GetAuraASC()->bStartupAbilitiesGiven)
 		{
 			//如果执行到此处时，技能的初始化工作已经完成，则直接调用初始化回调
-			OnInitializeStartupAbilities(AuraSAC);
+			BroadcastInitialValues();
 		}
 		else
 		{
 			//如果执行到此处，技能初始化还未完成，将通过绑定委托，监听广播的形式触发初始化完成回调
-			AuraSAC->AbilityGivenDelegate.AddUObject(this, &ThisClass::OnInitializeStartupAbilities);
+			GetAuraASC()->AbilityGivenDelegate.AddUObject(this, &ThisClass::BroadcastInitialValues);
 		}
 
 		//AddLambda 绑定匿名函数
@@ -103,30 +99,9 @@ void UOverlayWidgetController::MaxManaChanged(const FOnAttributeChangeData& Data
 	OnMaxManaChanged.Broadcast(Data.NewValue);
 }
 
-void UOverlayWidgetController::OnInitializeStartupAbilities(UAuraAbilitySystemComponent* AuraAbilitySystemComponent) const
+void UOverlayWidgetController::OnXPChanged(int32 NewXP)
 {
-	if(!AuraAbilitySystemComponent->bStartupAbilitiesGiven) return; //判断当前技能初始化是否完成，触发回调时都已经完成
-	
-	FForEachAbility BroadcastDelegate;
-	BroadcastDelegate.BindLambda([this](const FGameplayAbilitySpec& AbilitySpec)
-	{
-		//通过静态函数获取到技能实例的技能标签，并通过标签获取到技能数据
-		FAuraAbilityInfo Info = AbilityInfo->FindAbilityInfoForTag(UAuraAbilitySystemComponent::GetAbilityTagFromSpec(AbilitySpec));
-		//获取到技能的输入标签
-		FGameplayTag Tag =  UAuraAbilitySystemComponent::GetInputTagFromSpec(AbilitySpec);
-		Info.InputTag = Tag;
-		//广播技能数据
-		AbilityInfoDelegate.Broadcast(Info); 
-	});
-	//遍历技能并触发委托回调
-	AuraAbilitySystemComponent->ForEachAbility(BroadcastDelegate);
-
-}
-
-void UOverlayWidgetController::OnXPChanged(int32 NewXP) const
-{
-	const AAuraPlayerState* AuraPlayerState = CastChecked<AAuraPlayerState>(PlayerState);
-	const ULevelUpInfo* LevelUpInfo = AuraPlayerState->LevelUpInfo;
+	const ULevelUpInfo* LevelUpInfo = GetAuraPS()->LevelUpInfo;
 	checkf(LevelUpInfo, TEXT("无法查询到等级相关数据，请查看PlayerState是否设置了对应的数据"));
 
 	const int32 Level =  LevelUpInfo->FindLevelForXP(NewXP); //获取当前等级
