@@ -7,6 +7,7 @@
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "AuraAbilitySystemLibrary.generated.h"
 
+class UAbilityInfo;
 struct FWidgetControllerParams;
 class UAttributeMenuWidgetController;
 class UOverlayWidgetController;
@@ -51,6 +52,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category="MyAbilitySystemLibrary|CharacterClassDefaults")
 	static UCharacterClassInfo* GetCharacterClassInfo(const UObject* WorldContextObject);
 
+	//获取玩家角色技能配置数据
+	UFUNCTION(BlueprintCallable, Category="RPGAbilitySystemLibrary|CharacterClassDefaults", meta=(DefaultToSelf = "WorldContextObject"))
+	static UAbilityInfo* GetAbilityInfo(const UObject* WorldContextObject);
 
 	//获取当前GE是否触发格挡
 	UFUNCTION(BlueprintPure, Category="MyAbilitySystemLibrary|GameplayEffects")

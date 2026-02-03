@@ -140,6 +140,16 @@ UCharacterClassInfo* UAuraAbilitySystemLibrary::GetCharacterClassInfo(const UObj
 	
 }
 
+UAbilityInfo* UAuraAbilitySystemLibrary::GetAbilityInfo(const UObject* WorldContextObject)
+{
+	//获取到当前关卡的GameMode实例
+	const AAuraGameModeBase* GameMode = Cast<AAuraGameModeBase>(UGameplayStatics::GetGameMode(WorldContextObject));
+	if(GameMode == nullptr) return nullptr;
+
+	//返回关卡的角色的配置
+	return  GameMode->AbilityInfo;
+}
+
 bool UAuraAbilitySystemLibrary::IsBlockedHit(const FGameplayEffectContextHandle& EffectContextHandle)
 {
 	if(const FAuraGameplayEffectContext* AuraEffectContext = static_cast<const FAuraGameplayEffectContext*>(EffectContextHandle.Get()))

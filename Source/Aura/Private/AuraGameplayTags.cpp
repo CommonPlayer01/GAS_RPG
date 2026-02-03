@@ -150,6 +150,19 @@ void FAuraGameplayTags::InitializeInputGameplayTags()
 		FName("Attributes.InputTag.4"),
 		FString("键盘4键")
 		);
+
+	GameplayTags.InputTag_Passive_1 = UGameplayTagsManager::Get()
+	.AddNativeGameplayTag(
+		FName("InputTag.Passive.1"),
+		FString("被动技能1")
+		);
+	
+	GameplayTags.InputTag_Passive_2 = UGameplayTagsManager::Get()
+		.AddNativeGameplayTag(
+			FName("InputTag.Passive.2"),
+			FString("被动技能2")
+		);
+
 	/*
 	 * 伤害类型
 	 */
@@ -232,7 +245,48 @@ void FAuraGameplayTags::InitializeInputGameplayTags()
 		FString("受到攻击时，赋予的标签")
 	);
 
+	/*
+	 * 当前技能状态标签
+	*/
+	GameplayTags.Abilities_Status_Locked = UGameplayTagsManager::Get()
+		.AddNativeGameplayTag(
+			FName("Abilities.Status.Locked"),
+			FString("已锁定")
+			);
+	GameplayTags.Abilities_Status_Eligible = UGameplayTagsManager::Get()
+		.AddNativeGameplayTag(
+			FName("Abilities.Status.Eligible"),
+			FString("可解锁")
+			);
+	GameplayTags.Abilities_Status_Unlocked = UGameplayTagsManager::Get()
+		.AddNativeGameplayTag(
+			FName("Abilities.Status.Unlocked"),
+			FString("已解锁")
+			);
+	GameplayTags.Abilities_Status_Equipped = UGameplayTagsManager::Get()
+		.AddNativeGameplayTag(
+			FName("Abilities.Status.Equipped"),
+			FString("已装配")
+			);
 
+	/*
+	 * 当前技能类型标签
+	*/
+	GameplayTags.Abilities_Type_Offensive = UGameplayTagsManager::Get()
+		.AddNativeGameplayTag(
+			FName("Abilities.Type.Offensive"),
+			FString("主动技能")
+			);
+	GameplayTags.Abilities_Type_Passive = UGameplayTagsManager::Get()
+		.AddNativeGameplayTag(
+			FName("Abilities.Type.Passive"),
+			FString("被动技能")
+			);
+	GameplayTags.Abilities_Type_None = UGameplayTagsManager::Get()
+		.AddNativeGameplayTag(
+			FName("Abilities.Type.None"),
+			FString("啥也不是")
+			);
 	/*
 	 * Abilities
 	 */
@@ -248,6 +302,11 @@ void FAuraGameplayTags::InitializeInputGameplayTags()
 		FString("火球术技能标签")
 		);
 
+	GameplayTags.Abilities_Lightning_Electrocute = UGameplayTagsManager::Get()
+		.AddNativeGameplayTag(
+			FName("Abilities.Lightning.Electrocute"),
+			FString("电击技能标签")
+			);
 
 
 	/*

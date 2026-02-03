@@ -18,6 +18,15 @@ void UAuraWidgetController::SetWidgetControllerParams(const FWidgetControllerPar
 
 void UAuraWidgetController::BroadcastInitialValues()
 {
+
+}
+
+void UAuraWidgetController::BindCallbacksToDependencies()
+{
+}
+
+void UAuraWidgetController::BroadcastAbilityInfo()
+{
 	if(!GetAuraASC()->bStartupAbilitiesGiven) return; //判断当前技能初始化是否完成，触发回调时都已经完成
 	
 	FForEachAbility BroadcastDelegate;
@@ -26,17 +35,13 @@ void UAuraWidgetController::BroadcastInitialValues()
 		//通过静态函数获取到技能实例的技能标签，并通过标签获取到技能数据
 		FAuraAbilityInfo Info = AbilityInfo->FindAbilityInfoForTag(UAuraAbilitySystemComponent::GetAbilityTagFromSpec(AbilitySpec));
 		//获取到技能的输入标签
-		FGameplayTag Tag =  UAuraAbilitySystemComponent::GetInputTagFromSpec(AbilitySpec);
-		Info.InputTag = Tag;
+		Info.InputTag =  UAuraAbilitySystemComponent::GetInputTagFromSpec(AbilitySpec);
+		Info.StatusTag = UAuraAbilitySystemComponent::GetStatusFromSpec(AbilitySpec);
 		//广播技能数据
-		AbilityInfoDelegate.Broadcast(Info); 
+		AbilityInfoDelegate.Broadcast(Info);
 	});
 	//遍历技能并触发委托回调
 	GetAuraASC()->ForEachAbility(BroadcastDelegate);
-}
-
-void UAuraWidgetController::BindCallbacksToDependencies()
-{
 }
 
 AAuraPlayerController* UAuraWidgetController::GetAuraPC()

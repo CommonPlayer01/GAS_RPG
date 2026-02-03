@@ -61,6 +61,8 @@ public:
 	UPROPERTY(BlueprintAssignable, Category="GAS|Messages")
 	FAbilityInfoSignature AbilityInfoDelegate;
 
+	void BroadcastAbilityInfo(); //广播技能信息
+
 protected:
 	UPROPERTY(BlueprintReadOnly, Category="WidgetController")
 	TObjectPtr<APlayerController> PlayerController;

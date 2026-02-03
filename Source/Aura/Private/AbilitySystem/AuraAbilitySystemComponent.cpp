@@ -5,7 +5,9 @@
 
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AuraGameplayTags.h"
+#include "AbilitySystem/AuraAbilitySystemLibrary.h"
 #include "AbilitySystem/Abilities/AuraGameplayAbility.h"
+#include "AbilitySystem/Data/AbilityInfo.h"
 #include "Aura/AuraLogChannels.h"
 #include "Interaction/PlayerInterface.h"
 
@@ -41,7 +43,9 @@ void UAuraAbilitySystemComponent::AddCharacterAbilities(const TArray<TSubclassOf
 			// StartupInputTag 是 UAuraGameplayAbility 中定义的一个 FGameplayTag 成员
 			// GetDynamicSpecSourceTags() 返回的是可修改的 FGameplayTagContainer 引用
 			AbilitySpec.GetDynamicSpecSourceTags().AddTag(AbilityBase->StartupInputTag);
-
+			AbilitySpec.GetDynamicSpecSourceTags().AddTag(FAuraGameplayTags::Get().Abilities_Status_Eligible);
+			// AbilitySpec.GetDynamicSpecSourceTags().AddTag(AbilityBase->TestGameAbilityStatus);
+			
 			// GiveAbility() 仅注册技能，不会立即激活它,将该技能授予给当前的 AbilitySystemComponent（即角色）,技能将在后续输入触发（如 AbilityInputTagHold）时被激活
 			GiveAbility(AbilitySpec);
 
@@ -129,7 +133,10 @@ void UAuraAbilitySystemComponent::AbilityInputTagReleased(const FGameplayTag& In
 	}
 }
 
-void UAuraAbilitySystemComponent::ForEachAbility(const FForEachAbility& Delegate)
+void UAuraAbilitySystemComponent::
+
+
+ForEachAbility(const FForEachAbility& Delegate)
 {
 	FScopedAbilityListLock ActiveScopeLock(*this); //使用域锁将此作用域this的内容锁定（无法修改），在遍历结束时解锁，保证线程安全
 	for(const FGameplayAbilitySpec& AbilitySpec : GetActivatableAbilities())
@@ -166,6 +173,57 @@ FGameplayTag UAuraAbilitySystemComponent::GetInputTagFromSpec(const FGameplayAbi
 		}
 	}
 	return FGameplayTag();
+}
+
+FGameplayTag UAuraAbilitySystemComponent::GetStatusFromSpec(const FGameplayAbilitySpec& AbilitySpec)
+{
+	for(FGameplayTag Tag : AbilitySpec.GetDynamicSpecSourceTags()) //从技能实例的动态标签容器中遍历所有标签
+	{
+		if(Tag.MatchesTag(FGameplayTag::RequestGameplayTag(FName("Abilities.Status")))) //查找标签中是否设置以输入标签开头的标签
+		{
+			return Tag;
+		}
+	}
+
+	return FGameplayTag();
+}
+
+FGameplayAbilitySpec* UAuraAbilitySystemComponent::GetSpecFromAbilityTag(const FGameplayTag& AbilityTag)
+{
+	FScopedAbilityListLock ActiveScopeLoc(*this); //域锁
+	//遍历已经应用的技能
+	for(FGameplayAbilitySpec& AbilitySpec : GetActivatableAbilities())
+	{
+		for(FGameplayTag Tag : AbilitySpec.Ability.Get()->AbilityTags)
+		{
+			if(Tag.MatchesTag(AbilityTag))
+			{
+				return &AbilitySpec;
+			}
+		}
+	}
+	return nullptr;
+}
+
+void UAuraAbilitySystemComponent::UpdateAbilityStatuses(int32 Level)
+{
+	//从GameMode获取到技能配置数据
+	UAbilityInfo* AbilityInfo = UAuraAbilitySystemLibrary::GetAbilityInfo(GetAvatarActor());
+	for(const FAuraAbilityInfo& Info : AbilityInfo->AbilityInformation)
+	{
+		if(!Info.AbilityTag.IsValid()) continue; //如果没有技能标签，取消执行
+		if(Level < Info.LevelRequirement) continue; //如果当期等级未达到所需等级，取消执行
+		//判断ASC中是否已存在当前技能实例
+		if(GetSpecFromAbilityTag(Info.AbilityTag) == nullptr)
+		{
+			//如果没有技能实例，将应用一个新的技能实例
+			FGameplayAbilitySpec AbilitySpec = FGameplayAbilitySpec(Info.Ability, 1);
+			AbilitySpec.GetDynamicSpecSourceTags().AddTag(FAuraGameplayTags::Get().Abilities_Status_Eligible);
+			GiveAbility(AbilitySpec);
+			MarkAbilitySpecDirty(AbilitySpec); //设置当前技能立即复制到每个客户端
+		}
+	}
+
 }
 
 void UAuraAbilitySystemComponent::OnRep_ActivateAbilities()
