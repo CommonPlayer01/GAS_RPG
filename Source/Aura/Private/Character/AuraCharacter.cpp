@@ -105,6 +105,11 @@ void AAuraCharacter::AddToPlayerLevel_Implementation(int32 InPlayerLevel)
 	AAuraPlayerState* PlayerStateBase = GetPlayerState<AAuraPlayerState>();
 	check(PlayerStateBase); //检测是否有效，无限会暂停游戏
 	PlayerStateBase->AddToLevel(InPlayerLevel);
+
+	if(UAuraAbilitySystemComponent* AuraASC = Cast<UAuraAbilitySystemComponent>(GetAbilitySystemComponent()))
+	{
+		AuraASC->UpdateAbilityStatuses(PlayerStateBase->GetPlayerLevel());
+	}
 }
 
 int32 AAuraCharacter::GetAttributePoints_Implementation() const
