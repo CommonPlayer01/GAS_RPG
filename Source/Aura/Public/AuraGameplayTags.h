@@ -66,7 +66,8 @@ public:
 	FGameplayTag Damage_Arcane; //魔法伤害 标签
 	FGameplayTag Damage_Physical; //物理伤害 标签
 
-
+	FGameplayTag Abilities_None;
+	FGameplayTag Abilities_Summon;
 	FGameplayTag Abilities_Attack; //攻击技能激活标签
 	
 	FGameplayTag Abilities_Fire_FireBolt; //火球术技能标签

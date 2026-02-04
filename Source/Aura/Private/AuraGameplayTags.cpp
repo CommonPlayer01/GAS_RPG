@@ -290,6 +290,18 @@ void FAuraGameplayTags::InitializeInputGameplayTags()
 	/*
 	 * Abilities
 	 */
+	GameplayTags.Abilities_None = UGameplayTagsManager::Get()
+		.AddNativeGameplayTag(
+			FName("Abilities.None"),
+			FString("空白技能标签")
+			);
+
+	GameplayTags.Abilities_Summon = UGameplayTagsManager::Get()
+		.AddNativeGameplayTag(
+		FName("Abilities.Summon"),
+		FString("Summon技能标签")
+		);
+	
 	GameplayTags.Abilities_Attack = UGameplayTagsManager::Get()
 		.AddNativeGameplayTag(
 			FName("Abilities.Attack"),

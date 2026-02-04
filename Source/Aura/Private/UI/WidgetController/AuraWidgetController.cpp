@@ -36,7 +36,7 @@ void UAuraWidgetController::BroadcastAbilityInfo()
 		FAuraAbilityInfo Info = AbilityInfo->FindAbilityInfoForTag(UAuraAbilitySystemComponent::GetAbilityTagFromSpec(AbilitySpec));
 		//获取到技能的输入标签
 		Info.InputTag =  UAuraAbilitySystemComponent::GetInputTagFromSpec(AbilitySpec);
-		Info.StatusTag = UAuraAbilitySystemComponent::GetStatusFromSpec(AbilitySpec);
+		Info.StatusTag = UAuraAbilitySystemComponent::GetStatusTagFromSpec(AbilitySpec);
 		//广播技能数据
 		AbilityInfoDelegate.Broadcast(Info);
 	});
