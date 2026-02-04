@@ -43,7 +43,7 @@ void UAuraAbilitySystemComponent::AddCharacterAbilities(const TArray<TSubclassOf
 			// StartupInputTag 是 UAuraGameplayAbility 中定义的一个 FGameplayTag 成员
 			// GetDynamicSpecSourceTags() 返回的是可修改的 FGameplayTagContainer 引用
 			AbilitySpec.GetDynamicSpecSourceTags().AddTag(AbilityBase->StartupInputTag);
-			AbilitySpec.GetDynamicSpecSourceTags().AddTag(FAuraGameplayTags::Get().Abilities_Status_Eligible);
+			AbilitySpec.GetDynamicSpecSourceTags().AddTag(FAuraGameplayTags::Get().Abilities_Status_Equipped);
 			// AbilitySpec.GetDynamicSpecSourceTags().AddTag(AbilityBase->TestGameAbilityStatus);
 			
 			// GiveAbility() 仅注册技能，不会立即激活它,将该技能授予给当前的 AbilitySystemComponent（即角色）,技能将在后续输入触发（如 AbilityInputTagHold）时被激活

@@ -134,9 +134,8 @@ void UAuraAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallba
 				if(CombatInterface)
 				{
 					CombatInterface->Die();
-					SendXPEvent(Props);
-					
 				}
+				SendXPEvent(Props);
 				
 			}else
 			{
@@ -228,6 +227,7 @@ void UAuraAttributeSet::ShowFloatingText(const FEffectProperties& Props, const f
 	}
 }
 
+
 void UAuraAttributeSet::SendXPEvent(const FEffectProperties& Props)
 {
 	if(Props.TargetCharacter->Implements<UCombatInterface>())
@@ -244,6 +244,7 @@ void UAuraAttributeSet::SendXPEvent(const FEffectProperties& Props)
 		UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(Props.SourceCharacter, GameplayTags.Attributes_Meta_IncomingXP, Payload);
 	}
 }
+
 
 void UAuraAttributeSet::OnRep_Strength(const FGameplayAttributeData& OldStrength) const
 {

@@ -17,4 +17,8 @@ public:
 
 	virtual void BindCallbacksToDependencies() override;
 	virtual void BroadcastInitialValues() override;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnPlayerStateChangedSignature SpellPointChanged;
+
 };

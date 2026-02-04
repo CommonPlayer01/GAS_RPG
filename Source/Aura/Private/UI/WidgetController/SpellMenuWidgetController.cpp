@@ -4,6 +4,7 @@
 #include "UI/WidgetController/SpellMenuWidgetController.h"
 
 #include "AbilitySystem/AuraAbilitySystemComponent.h"
+#include "Player/AuraPlayerState.h"
 
 void USpellMenuWidgetController::BindCallbacksToDependencies()
 {
@@ -17,9 +18,16 @@ void USpellMenuWidgetController::BindCallbacksToDependencies()
 			AbilityInfoDelegate.Broadcast(Info);
 		}
 	});
+	//绑定技能点变动回调
+	GetAuraPS()->OnSpellPointsChangedDelegate.AddLambda([this](const int32 SpellPoints)
+	{
+		SpellPointChanged.Broadcast(SpellPoints); //广播拥有的技能点
+	});
+
 }
 
 void USpellMenuWidgetController::BroadcastInitialValues()
 {
 	BroadcastAbilityInfo();
+	SpellPointChanged.Broadcast(GetAuraPS()->GetSpellPoints());
 }
