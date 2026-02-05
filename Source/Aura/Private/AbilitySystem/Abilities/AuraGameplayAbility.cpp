@@ -4,6 +4,7 @@
 #include "AbilitySystem/Abilities/AuraGameplayAbility.h"
 
 #include "AbilitySystemComponent.h"
+#include "AbilitySystem/AuraAttributeSet.h"
 
 FString UAuraGameplayAbility::GetDescription(int32 Level)
 {
@@ -40,4 +41,37 @@ void UAuraGameplayAbility::InputReleased(const FGameplayAbilitySpecHandle Handle
 	Super::InputReleased(Handle, ActorInfo, ActivationInfo);
 	//将抬起事件复制到服务器和所有相关的客户端
 	ActorInfo->AbilitySystemComponent->InvokeReplicatedEvent(EAbilityGenericReplicatedEvent::InputReleased, Handle, ActivationInfo.GetActivationPredictionKey());
+}
+
+float UAuraGameplayAbility::GetManaCost(float InLevel) const
+{
+	float ManaCost = 0.f;
+	//获取到冷却GE
+	if(const UGameplayEffect* CostEffect = GetCostGameplayEffect())
+	{
+		//遍历GE修改的内容
+		for(FGameplayModifierInfo Mod : CostEffect->Modifiers)
+		{
+			//判断修改的属性是否为角色蓝量属性
+			if(Mod.Attribute == UAuraAttributeSet::GetManaAttribute())
+			{
+				//通过修饰符获取到使用的FScalableFloat并计算传入等级的蓝量消耗，FScalableFloat是受保护性的属性，无法直接获取，只能通过函数
+				Mod.ModifierMagnitude.GetStaticMagnitudeIfPossible(InLevel, ManaCost);
+				break; //获取到了就结束遍历
+			}
+		}
+	}
+	return ManaCost;
+}
+
+float UAuraGameplayAbility::GetCooldown(float InLevel) const
+{
+	float Cooldown = 0.f;
+	//获取到技能冷却GE
+	if(const UGameplayEffect* CooldownEffect = GetCooldownGameplayEffect())
+	{
+		//获取到当前冷却时间
+		CooldownEffect->DurationMagnitude.GetStaticMagnitudeIfPossible(InLevel, Cooldown);
+	}
+	return Cooldown;
 }

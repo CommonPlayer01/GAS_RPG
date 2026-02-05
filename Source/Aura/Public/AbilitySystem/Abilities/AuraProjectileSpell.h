@@ -27,6 +27,4 @@ protected:
 	void SpawnProjectile(const FVector& ProjectileTargetLocation);
 	
 
-
-
 };

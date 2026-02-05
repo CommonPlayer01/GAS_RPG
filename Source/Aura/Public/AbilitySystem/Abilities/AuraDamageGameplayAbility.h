@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "AbilitySystem/Abilities/AuraGameplayAbility.h"
+#include "Interaction/CombatInterface.h"
 #include "AuraDamageGameplayAbility.generated.h"
 
 /**
@@ -36,5 +37,7 @@ protected:
 	//从角色设置的蒙太奇数组总，随机一个蒙太奇使用
 	UFUNCTION(BlueprintPure)
 	static FTaggedMontage GetRandomTaggedMontageFromArray(const TArray<FTaggedMontage>& TaggedMontages);
+
+	float GetDamageByDamageType(float InLevel, const FGameplayTag& DamageType); //根据伤害类型获取伤害
 
 };
