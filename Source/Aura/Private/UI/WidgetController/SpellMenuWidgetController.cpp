@@ -10,8 +10,13 @@
 void USpellMenuWidgetController::BindCallbacksToDependencies()
 {
 	//绑定技能状态修改后的委托回调
-	GetAuraASC()->AbilityStatusChanged.AddLambda([this](const FGameplayTag& AbilityTag, const FGameplayTag& StatusTag)
+	GetAuraASC()->AbilityStatusChanged.AddLambda([this](const FGameplayTag& AbilityTag, const FGameplayTag& StatusTag, int32 Newlevel)
 	{
+		if (SelectedAbility.AbilityTag.MatchesTagExact(AbilityTag))
+		{
+			SelectedAbility.StatusTag = StatusTag;
+			BroadcastSpellGlobeSelected();
+		}
 		if(AbilityInfo)
 		{
 			FAuraAbilityInfo Info = AbilityInfo->FindAbilityInfoForTag(AbilityTag); //获取到技能数据
@@ -23,6 +28,10 @@ void USpellMenuWidgetController::BindCallbacksToDependencies()
 	GetAuraPS()->OnSpellPointsChangedDelegate.AddLambda([this](const int32 SpellPoints)
 	{
 		SpellPointChanged.Broadcast(SpellPoints); //广播拥有的技能点
+		
+		CurrentSpellPoints = SpellPoints;
+
+		BroadcastSpellGlobeSelected(); //广播升降级按钮状态
 	});
 
 }
@@ -55,16 +64,36 @@ FGameplayTag USpellMenuWidgetController::SpellGlobeSelected(const FGameplayTag& 
 		AbilityStatus = GetAuraASC()->GetStatusTagFromSpec(*AbilitySpec);
 	}
 
+	//选中时，更新控制器缓存数据
+	SelectedAbility.AbilityTag = AbilityTag;
+	SelectedAbility.StatusTag = AbilityStatus;
+	CurrentSpellPoints = SpellPoints;
+
+	BroadcastSpellGlobeSelected(); //广播升降级按钮状态
+	
+
+	return AbilityStatus;
+}
+
+void USpellMenuWidgetController::BroadcastSpellGlobeSelected() const
+{
 	bool bEnableSpendPoints = false; //技能是否可以升级
 	bool bEnableEquip = false; //技能是否可以装配
 	bool bEnableDemotion = false; //技能是否可以降级
 
-	ShouldEnableButtons(AbilityStatus, SpellPoints > 0, bEnableSpendPoints, bEnableEquip, bEnableDemotion); //获取结果
+	ShouldEnableButtons(SelectedAbility.StatusTag, CurrentSpellPoints > 0, bEnableSpendPoints, bEnableEquip, bEnableDemotion); //获取结果
 
 	SpellGlobeSelectedSignature.Broadcast(bEnableSpendPoints, bEnableEquip, bEnableDemotion); //广播状态
-
-	return AbilityStatus;
 }
+
+void USpellMenuWidgetController::SpendPointButtonPressed()
+{
+	if(GetAuraASC())
+	{
+		GetAuraASC()->ServerSpendSpellPoint(SelectedAbility.AbilityTag); //调用ASC等级提升函数
+	}
+}
+   
 
 /*
  * 根据状态和是否拥有可分配的技能点数，来设置对应的状态
