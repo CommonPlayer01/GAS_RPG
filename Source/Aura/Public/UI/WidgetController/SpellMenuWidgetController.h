@@ -8,6 +8,7 @@
 #include "SpellMenuWidgetController.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FSpellGlobeSelectedSignature, bool, bSpendPointsEnabled, bool, bEquipEnabled, bool, bDemotionPointsEnabled);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FSpellDescriptionSignature, FString, SpellDescription, FString, SpellNextLevelDescription); //技能描述委托
 
 //在技能面板选中的技能的标签结构体
 struct FSelectedAbility
@@ -30,16 +31,20 @@ public:
 	virtual void BroadcastInitialValues() override;
 
 	UPROPERTY(BlueprintAssignable)
-	FOnPlayerStateChangedSignature SpellPointChanged;
+	FOnPlayerStateChangedSignature SpellPointChangedDelegate;
 
 	UPROPERTY(BlueprintAssignable)
-	FSpellGlobeSelectedSignature SpellGlobeSelectedSignature; //选中技能按钮后，升级和装备按钮的变动回调
+	FSpellGlobeSelectedSignature SpellGlobeSelectedDelegate; //选中技能按钮后，升级和装备按钮的变动回调
+
+	UPROPERTY(BlueprintAssignable)
+	FSpellDescriptionSignature SpellDescriptionDelegate; //选中技能按钮后，技能和下一级描述委托
+
 	
 	UFUNCTION(BlueprintCallable)
 	FGameplayTag SpellGlobeSelected(const FGameplayTag& AbilityTag); //技能按钮选中调用函数，处理升级按钮和装配
 
 	//广播当前技能按钮升降级按钮状态和可装配状态
-	void BroadcastSpellGlobeSelected() const;
+	void BroadcastSpellGlobeSelected();
 
 	UFUNCTION(BlueprintCallable)
 	void SpendPointButtonPressed(); //升级按钮调用函数

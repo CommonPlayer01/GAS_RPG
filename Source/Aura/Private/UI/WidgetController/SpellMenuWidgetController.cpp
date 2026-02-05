@@ -27,7 +27,7 @@ void USpellMenuWidgetController::BindCallbacksToDependencies()
 	//绑定技能点变动回调
 	GetAuraPS()->OnSpellPointsChangedDelegate.AddLambda([this](const int32 SpellPoints)
 	{
-		SpellPointChanged.Broadcast(SpellPoints); //广播拥有的技能点
+		SpellPointChangedDelegate.Broadcast(SpellPoints); //广播拥有的技能点
 		
 		CurrentSpellPoints = SpellPoints;
 
@@ -39,7 +39,7 @@ void USpellMenuWidgetController::BindCallbacksToDependencies()
 void USpellMenuWidgetController::BroadcastInitialValues()
 {
 	BroadcastAbilityInfo();
-	SpellPointChanged.Broadcast(GetAuraPS()->GetSpellPoints());
+	SpellPointChangedDelegate.Broadcast(GetAuraPS()->GetSpellPoints());
 }
 
 FGameplayTag USpellMenuWidgetController::SpellGlobeSelected(const FGameplayTag& AbilityTag)
@@ -75,7 +75,7 @@ FGameplayTag USpellMenuWidgetController::SpellGlobeSelected(const FGameplayTag& 
 	return AbilityStatus;
 }
 
-void USpellMenuWidgetController::BroadcastSpellGlobeSelected() const
+void USpellMenuWidgetController::BroadcastSpellGlobeSelected()
 {
 	bool bEnableSpendPoints = false; //技能是否可以升级
 	bool bEnableEquip = false; //技能是否可以装配
@@ -83,7 +83,13 @@ void USpellMenuWidgetController::BroadcastSpellGlobeSelected() const
 
 	ShouldEnableButtons(SelectedAbility.StatusTag, CurrentSpellPoints > 0, bEnableSpendPoints, bEnableEquip, bEnableDemotion); //获取结果
 
-	SpellGlobeSelectedSignature.Broadcast(bEnableSpendPoints, bEnableEquip, bEnableDemotion); //广播状态
+	SpellGlobeSelectedDelegate.Broadcast(bEnableSpendPoints, bEnableEquip, bEnableDemotion); //广播状态
+
+	//广播技能描述
+	FString Description;
+	FString NextLevelDescription;
+	GetAuraASC()->GetDescriptionByAbilityTag(SelectedAbility.AbilityTag, Description, NextLevelDescription);
+	SpellDescriptionDelegate.Broadcast(Description, NextLevelDescription);
 }
 
 void USpellMenuWidgetController::SpendPointButtonPressed()

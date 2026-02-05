@@ -5,6 +5,21 @@
 
 #include "AbilitySystemComponent.h"
 
+FString UAuraGameplayAbility::GetDescription(int32 Level)
+{
+	return FString::Printf(TEXT("%s, <Level>%d</>"), L"默认技能名称 - 火球术火球术火球术火球术", Level);
+}
+
+FString UAuraGameplayAbility::GetNextLevelDescription(int32 Level)
+{
+	return FString::Printf(TEXT("下一等级：<Level>%d</> 造成更多的伤害。"), Level);
+}
+
+FString UAuraGameplayAbility::GetLockedDescription(int32 Level)
+{
+	return FString::Printf(TEXT("技能将在角色等级达到<Level>%d</>时解锁"), Level);
+}
+
 void UAuraGameplayAbility::InputPressed(const FGameplayAbilitySpecHandle Handle,
                                         const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo)
 {
