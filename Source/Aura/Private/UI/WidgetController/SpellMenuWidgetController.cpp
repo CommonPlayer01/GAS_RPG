@@ -24,6 +24,10 @@ void USpellMenuWidgetController::BindCallbacksToDependencies()
 			AbilityInfoDelegate.Broadcast(Info);
 		}
 	});
+
+	//监听技能装配的回调
+	GetAuraASC()->AbilityEquipped.AddUObject(this, &USpellMenuWidgetController::OnAbilityEquipped);
+
 	//绑定技能点变动回调
 	GetAuraPS()->OnSpellPointsChangedDelegate.AddLambda([this](const int32 SpellPoints)
 	{
@@ -44,6 +48,14 @@ void USpellMenuWidgetController::BroadcastInitialValues()
 
 FGameplayTag USpellMenuWidgetController::SpellGlobeSelected(const FGameplayTag& AbilityTag)
 {
+	if (bWaitForEquipSelection)
+	{
+		const FGameplayTag& SelectedAbilityType = AbilityInfo->FindAbilityInfoForTag(AbilityTag).AbilityType;
+		StopWaitForEquipSelectionDelegate.Broadcast(SelectedAbilityType);
+		bWaitForEquipSelection = false;
+	}
+
+	
 	const FAuraGameplayTags GameplayTags = FAuraGameplayTags::Get();
 	const int32 SpellPoints = GetAuraPS()->GetSpellPoints(); //获取技能点数
 	FGameplayTag AbilityStatus;
@@ -99,7 +111,78 @@ void USpellMenuWidgetController::SpendPointButtonPressed()
 		GetAuraASC()->ServerSpendSpellPoint(SelectedAbility.AbilityTag); //调用ASC等级提升函数
 	}
 }
-   
+
+void USpellMenuWidgetController::GlobeDeselect()
+{
+	const FGameplayTag& SelectedAbilityType = AbilityInfo->FindAbilityInfoForTag(SelectedAbility.AbilityTag).AbilityType;
+	StopWaitForEquipSelectionDelegate.Broadcast(SelectedAbilityType);
+	bWaitForEquipSelection = false;
+
+	const FAuraGameplayTags GameplayTags = FAuraGameplayTags::Get();
+	SelectedAbility.AbilityTag = GameplayTags.Abilities_None;
+	SelectedAbility.StatusTag = GameplayTags.Abilities_Status_Locked;
+	// SelectedAbility.Level = 0;
+
+	SpellDescriptionDelegate.Broadcast(FString(), FString());
+}
+
+void USpellMenuWidgetController::EquipButtonPressed(const FGameplayTag& SlotTag, const FGameplayTag& AbilityType)
+{
+	// const FAuraGameplayTags GameplayTags = FAuraGameplayTags::Get();
+
+	//获取装配技能的类型
+	const FGameplayTag& SelectedAbilityType = AbilityInfo->FindAbilityInfoForTag(SelectedAbility.AbilityTag).AbilityType;
+	WaitForEquipSelectionDelegate.Broadcast(SelectedAbilityType);
+	bWaitForEquipSelection = true;
+
+	const FGameplayTag SelectedStatus = GetAuraASC()->GetStatusTagFromAbilityTag(SelectedAbility.AbilityTag);
+	if (SelectedStatus.MatchesTagExact(FAuraGameplayTags::Get().Abilities_Status_Equipped))
+	{
+		SelectedSlot = GetAuraASC()->GetInputTagFromAbilityTag(SelectedAbility.AbilityTag);
+	}
+	
+	// if(!SelectedAbilityType.MatchesTagExact(AbilityType)) return; //类型不同无法装配
+
+// 	//获取装配技能的输入标签
+// 	if(SelectedAbilityInputTag.MatchesTagExact(SlotTag)) return; //如果当前技能输入和插槽标签相同，证明已经装配，不需要再处理
+//
+// 	//调用装配技能函数，进行处理
+// 	GetAuraASC()->ServerEquipAbility(SelectedAbility.Ability, SlotTag);
+}
+
+void USpellMenuWidgetController::SpellRowGlobeSelected(const FGameplayTag& SlotnputTag, const FGameplayTag& AbilityType)
+{
+	if (!bWaitForEquipSelection) return;
+	const FGameplayTag&	SelectedAbilityType = AbilityInfo->FindAbilityInfoForTag(SelectedAbility.AbilityTag).AbilityType;
+	if (!SelectedAbilityType.MatchesTagExact(AbilityType)) return;
+
+	GetAuraASC()->ServerEquipAbility(SelectedAbility.AbilityTag, SlotnputTag);
+}
+
+void USpellMenuWidgetController::OnAbilityEquipped(const FGameplayTag& AbilityTag, const FGameplayTag& Status,
+	const FGameplayTag& Slot, const FGameplayTag& PreviousSlot)
+{
+	bWaitForEquipSelection = false;
+	const FAuraGameplayTags GameplayTags = FAuraGameplayTags::Get();
+
+	//清除旧插槽的数据
+	FAuraAbilityInfo LastSlotInfo;
+	LastSlotInfo.StatusTag = GameplayTags.Abilities_Status_Unlocked;
+	LastSlotInfo.InputTag = PreviousSlot;
+	LastSlotInfo.AbilityTag = GameplayTags.Abilities_None;
+	AbilityInfoDelegate.Broadcast(LastSlotInfo);
+
+	//更新新插槽的数据
+	FAuraAbilityInfo Info = AbilityInfo->FindAbilityInfoForTag(AbilityTag);
+	Info.StatusTag = Status;
+	Info.InputTag = Slot;
+	AbilityInfoDelegate.Broadcast(Info);
+
+	StopWaitForEquipSelectionDelegate.Broadcast(AbilityInfo->FindAbilityInfoForTag(AbilityTag).AbilityType);
+	SpellGlobeReassignedDelegate.Broadcast(AbilityTag);
+	GlobeDeselect();
+}
+
 
 /*
  * 根据状态和是否拥有可分配的技能点数，来设置对应的状态

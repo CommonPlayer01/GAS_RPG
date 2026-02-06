@@ -90,13 +90,12 @@ protected:
 
 	template <class T>
 	T* GetDataTableRowByTag(UDataTable* DataTable, const FGameplayTag& Tag);
-
-
-
+	
 
 	void OnXPChanged(int32 NewXP); //经验变动后的回调
 
-
+	//监听技能装配后的处理
+	void OnAbilityEquipped(const FGameplayTag& AbilityTag, const FGameplayTag& Status, const FGameplayTag& Slot, const FGameplayTag& PreviousSlot);
 };
 
 //根据传入的表格和Tag返回查找到的数据，表格类型不确定，所以使用T来表示，在使用此函数时，需要指定对应类型

@@ -2,6 +2,8 @@
 
 
 #include "UI/WidgetController/OverlayWidgetController.h"
+
+#include "AuraGameplayTags.h"
 #include "AbilitySystem/AuraAbilitySystemComponent.h"
 #include "AbilitySystem/AuraAttributeSet.h"
 #include "AbilitySystem/Data/AbilityInfo.h"
@@ -18,6 +20,7 @@ void UOverlayWidgetController::BroadcastInitialValues()
 	OnManaChanged.Broadcast(GetAuraAS()->GetMana());
 	OnMaxManaChanged.Broadcast(GetAuraAS()->GetMaxMana());
 
+	BroadcastAbilityInfo();
 }
 
 void UOverlayWidgetController::BindCallbacksToDependencies()
@@ -47,6 +50,7 @@ void UOverlayWidgetController::BindCallbacksToDependencies()
 
 	if(GetAuraASC())
 	{
+		GetAuraASC()->AbilityEquipped.AddUObject(this, &UOverlayWidgetController::OnAbilityEquipped);
 		if(GetAuraASC()->bStartupAbilitiesGiven)
 		{
 			//如果执行到此处时，技能的初始化工作已经完成，则直接调用初始化回调
@@ -115,4 +119,24 @@ void UOverlayWidgetController::OnXPChanged(int32 NewXP)
 		const float XPPercent = static_cast<float>((NewXP - PreviousLevelUpRequirement) * 1.0 / (LevelUpRequirement - PreviousLevelUpRequirement)); //计算经验百分比
 		OnXPPercentChangedDelegate.Broadcast(XPPercent); //广播经验条比例
 	}
+}
+
+void UOverlayWidgetController::OnAbilityEquipped(const FGameplayTag& AbilityTag, const FGameplayTag& Status,
+	const FGameplayTag& Slot, const FGameplayTag& PreviousSlot)
+{
+	const FAuraGameplayTags GameplayTags = FAuraGameplayTags::Get();
+
+	//清除旧插槽的数据
+	FAuraAbilityInfo LastSlotInfo;
+	LastSlotInfo.StatusTag = GameplayTags.Abilities_Status_Unlocked;
+	LastSlotInfo.InputTag = PreviousSlot;
+	LastSlotInfo.AbilityTag = GameplayTags.Abilities_None;
+	AbilityInfoDelegate.Broadcast(LastSlotInfo);
+
+	//更新新插槽的数据
+	FAuraAbilityInfo Info = AbilityInfo->FindAbilityInfoForTag(AbilityTag);
+	Info.StatusTag = Status;
+	Info.InputTag = Slot;
+	AbilityInfoDelegate.Broadcast(Info);
+
 }
