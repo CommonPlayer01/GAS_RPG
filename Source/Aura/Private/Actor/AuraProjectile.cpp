@@ -54,7 +54,7 @@ void AAuraProjectile::Destroyed()
 	//如果没有权威性，并且bHit没有修改为true，证明当前没有触发Overlap事件，在销毁前播放击中特效
 	if(!bHit && !HasAuthority())
 	{
-		PlayImpact();
+		OnHit();
 	}
 	Super::Destroyed();
 
@@ -72,18 +72,22 @@ void AAuraProjectile::OnSphereOverlap(
 	// if (GetInstigator() == OtherActor)
 	// {
 	// 	return;
-	// } 
-	if (!DamageEffectHandle.Data.IsValid() || DamageEffectHandle.Data.Get()->GetContext().GetEffectCauser() == OtherActor)
-	{
-		return;
-	}
-	if (!UAuraAbilitySystemLibrary::IsNotFriend(DamageEffectHandle.Data.Get()->GetContext().GetEffectCauser(), OtherActor))
+	// }
+  	AActor* SourceAvatarActor = DamageEffectParams.SourceAbilitySystemComponent->GetAvatarActor();
+	// if (!DamageEffectHandle.Data.IsValid() || DamageEffectHandle.Data.Get()->GetContext().GetEffectCauser() == OtherActor)
+	// {
+	// 	return;
+	// }
+
+	if (SourceAvatarActor == OtherActor) return;
+	
+	if (!UAuraAbilitySystemLibrary::IsNotFriend(SourceAvatarActor, OtherActor))
 	{
 		return;
 	} 
 	if (!bHit)
 	{
-		PlayImpact();
+		OnHit();
 	}
 	//在重叠后，销毁自身
 	if(HasAuthority())
@@ -91,7 +95,8 @@ void AAuraProjectile::OnSphereOverlap(
 		//为目标应用GE
 		if(UAbilitySystemComponent* TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(OtherActor))
 		{
-			TargetASC->ApplyGameplayEffectSpecToSelf(*DamageEffectHandle.Data.Get());
+			DamageEffectParams.TargetAbilitySystemComponent = TargetASC;
+			UAuraAbilitySystemLibrary::ApplyDamageEffect(DamageEffectParams);
 		}
 
 		Destroy();
@@ -103,7 +108,7 @@ void AAuraProjectile::OnSphereOverlap(
 	}
 }
 
-void AAuraProjectile::PlayImpact() const
+void AAuraProjectile::OnHit() const
 {
 	//播放声效
 	UGameplayStatics::PlaySoundAtLocation(this, ImpactSound, GetActorLocation(), FRotator::ZeroRotator);

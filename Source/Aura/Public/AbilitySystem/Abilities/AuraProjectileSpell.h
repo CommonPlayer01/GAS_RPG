@@ -25,6 +25,5 @@ protected:
 
 	UFUNCTION(BlueprintCallable, Category="Projectile")
 	void SpawnProjectile(const FVector& ProjectileTargetLocation);
-	
 
 };

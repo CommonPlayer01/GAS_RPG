@@ -51,39 +51,9 @@ void UAuraProjectileSpell::SpawnProjectile(const FVector& ProjectileTargetLocati
 			ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
 		//TODO:设置一个用于造成伤害的游戏效果
 
-		// 获取当前技能所属角色（Avatar Actor）的 AbilitySystemComponent（即伤害来源的 ASC）
-		const UAbilitySystemComponent* SourceASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(GetAvatarActorFromActorInfo());
-
-		FGameplayEffectContextHandle EffectContextHandle = SourceASC->MakeEffectContext();
-		EffectContextHandle.SetAbility(this); //设置技能
-		EffectContextHandle.AddSourceObject(Projectile); //设置GE的源
-		//添加Actor列表
-		TArray<TWeakObjectPtr<AActor>> Actors;
-		Actors.Add(Projectile);
-		EffectContextHandle.AddActors(Actors);
-		//添加命中结果
-		FHitResult HitResult;
-		HitResult.Location = ProjectileTargetLocation;
-		EffectContextHandle.AddHitResult(HitResult);
-		//添加技能触发位置
-		EffectContextHandle.AddOrigin(ProjectileTargetLocation);
-
+		Projectile->DamageEffectParams = MakeDamageEffectParamsFromClassDefaults();
 		
-		// 基于伤害效果类（DamageEffectClass）、当前技能等级和上下文，创建一个传出的 GameplayEffect 规格（Spec）
-		// 此 Spec 将用于后续对目标应用伤害
-		const FGameplayEffectSpecHandle SpecHandle = SourceASC->MakeOutgoingSpec(DamageEffectClass, GetAbilityLevel(), EffectContextHandle);
-
-		// 获取全局 GameplayTags 单例，用于访问预定义的标签
-		FAuraGameplayTags GameplayTags = FAuraGameplayTags::Get();
-
-		for (auto Pair : DamageTypes)
-		{
-			const float ScaleDamage = Pair.Value.GetValueAtLevel(GetAbilityLevel());
-			UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(SpecHandle, Pair.Key, ScaleDamage);
-		}
-
-		// 将配置好的伤害效果句柄赋值给投射物，以便命中时使用
-		Projectile->DamageEffectHandle = SpecHandle;
+		
 
 		// 调用 FinishSpawning 确保投射物的 SpawnTransform（位置和旋转）被正确应用
 		// 即使已通过 SpawnActorDeferred 创建，也需调用此函数完成生成流程

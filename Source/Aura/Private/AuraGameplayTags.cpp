@@ -220,11 +220,70 @@ void FAuraGameplayTags::InitializeInputGameplayTags()
 			FName("Resistance.Physical"),
 			FString("物理伤害抗性")
 		);
+
+	/*
+	 * 负面标签注册
+	*/
+	GameplayTags.Debuff_Burn = UGameplayTagsManager::Get()
+		.AddNativeGameplayTag(
+			FName("Debuff.Burn"),
+			FString("火属性燃烧负面标签")
+			);
+	GameplayTags.Debuff_Stun = UGameplayTagsManager::Get()
+		.AddNativeGameplayTag(
+			FName("Debuff.Stun"),
+			FString("雷属性眩晕负面标签")
+			);
+	GameplayTags.Debuff_Arcane = UGameplayTagsManager::Get()
+		.AddNativeGameplayTag(
+			FName("Debuff.Arcane"),
+			FString("魔法属性负面标签")
+			);
+	GameplayTags.Debuff_Physical = UGameplayTagsManager::Get()
+		.AddNativeGameplayTag(
+			FName("Debuff.Physical"),
+			FString("物理属性流血负面标签")
+			);
+
+	/*
+	 * 负面效果配置标签
+	*/
+	GameplayTags.Debuff_Chance = UGameplayTagsManager::Get()
+		.AddNativeGameplayTag(
+			FName("Debuff.Chance"),
+			FString("负面效果 触发几率")
+			);
+	GameplayTags.Debuff_Damage = UGameplayTagsManager::Get()
+		.AddNativeGameplayTag(
+			FName("Debuff.Damage"),
+			FString("负面效果 伤害")
+			);
+	GameplayTags.Debuff_Duration = UGameplayTagsManager::Get()
+		.AddNativeGameplayTag(
+			FName("Debuff.Duration"),
+			FString("负面效果 持续时间")
+			);
+	GameplayTags.Debuff_Frequency = UGameplayTagsManager::Get()
+		.AddNativeGameplayTag(
+			FName("Debuff.Frequency"),
+			FString("负面效果 触发间隔")
+			);
+
+
+	
 	/* 将属性和抗性标签对应 */
 	GameplayTags.DamageTypesToResistances.Add(GameplayTags.Damage_Fire, GameplayTags.Attributes_Resistance_Fire);
 	GameplayTags.DamageTypesToResistances.Add(GameplayTags.Damage_Lightning, GameplayTags.Attributes_Resistance_Lightning);
 	GameplayTags.DamageTypesToResistances.Add(GameplayTags.Damage_Arcane, GameplayTags.Attributes_Resistance_Arcane);
 	GameplayTags.DamageTypesToResistances.Add(GameplayTags.Damage_Physical, GameplayTags.Attributes_Resistance_Physical);
+
+	/*
+	 * 负面标签和属性抵抗标签对于对应
+	*/
+	GameplayTags.DamageTypesToDebuffs.Add(GameplayTags.Damage_Fire, GameplayTags.Debuff_Burn);
+	GameplayTags.DamageTypesToDebuffs.Add(GameplayTags.Damage_Lightning, GameplayTags.Debuff_Stun);
+	GameplayTags.DamageTypesToDebuffs.Add(GameplayTags.Damage_Arcane, GameplayTags.Debuff_Arcane);
+	GameplayTags.DamageTypesToDebuffs.Add(GameplayTags.Damage_Physical, GameplayTags.Debuff_Physical);
 
 
 	/*

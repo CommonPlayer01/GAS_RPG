@@ -257,6 +257,15 @@ public:
 
 
 private:
+	//处理传入的参数为伤害属性时，处理的逻辑
+	void HandleIncomingDamage(const FEffectProperties& Props);
+
+	//处理传入的参数为经验属性时，处理的逻辑
+	void HandleIncomingXP(const FEffectProperties& Props);
+
+	//如果当前伤害触发了负面效果，处理的逻辑
+	void Debuff(const FEffectProperties& Props);
+
 	static void SetEffectProperties(const FGameplayEffectModCallbackData& Data, FEffectProperties& Props);
 	static void ShowFloatingText(const FEffectProperties& Props, const float Damage, bool bBlocked, bool bCriticalHit);
 
