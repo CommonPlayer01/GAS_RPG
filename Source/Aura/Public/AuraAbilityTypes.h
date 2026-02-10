@@ -68,6 +68,7 @@ public:
 	float GetDebuffFrequency() const { return DebuffFrequency; }
 	TSharedPtr<FGameplayTag> GetDamageType() const { return DamageType; }
 
+
 	void SetIsBlockedHit(const bool bInIsBlockedHit) { bIsBlockedHit = bInIsBlockedHit; }
 	void SetIsCriticalHit(const bool bInIsCriticalHit) { bIsCriticalHit = bInIsCriticalHit; }
 	void SetIsSuccessfulDebuff(bool bInIsDebuff) { bIsSuccessfulDebuff = bInIsDebuff; }

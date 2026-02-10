@@ -10,6 +10,7 @@
 #include "AuraCharacterBase.generated.h"
 
 
+class UDebuffNiagaraComponent;
 class UGameplayAbility;
 class UAbilitySystemComponent;
 class UAttributeSet;
@@ -27,11 +28,7 @@ public:
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 	UAttributeSet* GetAttributeSet() const { return AttributeSet; } //获取as
 
-	UFUNCTION(NetMulticast, Reliable)
-	virtual void MulticastHandleDeath();
-
 	virtual USkeletalMeshComponent* GetWeapon_Implementation() override;
-
 	virtual UAnimMontage* GetHitReactMontage_Implementation() override;
 	virtual FVector GetCombatSocketLocation_Implementation(const FGameplayTag& MontageTag) const override;
 	virtual void Die() override;
@@ -40,8 +37,15 @@ public:
 	virtual TArray<FTaggedMontage> GetAttackMontages_Implementation() override;
 	
 	virtual ECharacterClass GetCharacterClass_Implementation() override;
+	virtual FOnASCRegistered& GetOnASCRegisteredDelegate() override;
+	virtual FOnDeath& GetOnDeathDelegate() override; //角色死亡委托
+	
+	FOnASCRegistered OnASCRegisteredDelegate;//ASC注册成功委托
+	FOnDeath OnDeath; //角色死亡后触发的死亡委托
 
-
+	UFUNCTION(NetMulticast, Reliable)
+	virtual void MulticastHandleDeath();
+	
 	UPROPERTY(EditAnywhere, Category="Combat")
 	TArray<FTaggedMontage> AttackMontage;
 
@@ -88,7 +92,10 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character Class Defaults")
 	ECharacterClass CharacterClass = ECharacterClass::Warrior;
-	
+
+	UPROPERTY(VisibleAnywhere) //火焰负面效果表现组件
+	TObjectPtr<UDebuffNiagaraComponent> BurnDebuffComponent;
+
 private:
 
 	UPROPERTY(EditAnywhere, Category="Attributes")

@@ -371,13 +371,14 @@ void UAuraAttributeSet::HandleIncomingXP(const FEffectProperties& Props)
 void UAuraAttributeSet::Debuff(const FEffectProperties& Props)
 {
 	//获取负面效果相关参数
-	const FGameplayTag DeBuffType = UAuraAbilitySystemLibrary::GetDamageType(Props.EffectContextHandle);
+	const FGameplayTag DamageType = UAuraAbilitySystemLibrary::GetDamageType(Props.EffectContextHandle);
+	const FGameplayTag DebuffDamageType = FAuraGameplayTags::Get().DamageTypesToDebuffs[DamageType];
 	const float DeBuffDamage = UAuraAbilitySystemLibrary::GetDebuffDamage(Props.EffectContextHandle);
 	const float DeBuffDuration = UAuraAbilitySystemLibrary::GetDebuffDuration(Props.EffectContextHandle);
 	const float DeBuffFrequency = UAuraAbilitySystemLibrary::GetDebuffFrequency(Props.EffectContextHandle);
 
 	//创建GE所使用的名称，并创建一个可实例化的GE
-	FString DeBuffName = FString::Printf(TEXT("DynamicDeBuff_%s"), *DeBuffType.ToString());
+	FString DeBuffName = FString::Printf(TEXT("DynamicDeBuff_%s"), *DebuffDamageType.ToString());
 	UGameplayEffect* Effect = NewObject<UGameplayEffect>(GetTransientPackage(), FName(DeBuffName));
 
 	//设置动态创建GE的属性
@@ -401,7 +402,7 @@ void UAuraAttributeSet::Debuff(const FEffectProperties& Props)
 	//在5.3版本修改为通过GEComponent来设置GE应用的标签，向目标Actor增加对应的标签
 	UTargetTagsGameplayEffectComponent& TargetTagsGameplayEffectComponent = Effect->AddComponent<UTargetTagsGameplayEffectComponent>();
 	FInheritedTagContainer InheritableOwnedTagsContainer = TargetTagsGameplayEffectComponent.GetConfiguredTargetTagChanges(); //获取到标签容器
-	InheritableOwnedTagsContainer.AddTag(DeBuffType); //添加标签
+	InheritableOwnedTagsContainer.AddTag(DebuffDamageType); //添加标签
 	TargetTagsGameplayEffectComponent.SetAndApplyTargetTagChanges(InheritableOwnedTagsContainer); //应用并更新
 
 	//设置属性修改
@@ -419,7 +420,7 @@ void UAuraAttributeSet::Debuff(const FEffectProperties& Props)
 	if(const FGameplayEffectSpec* MutableSpec = new FGameplayEffectSpec(Effect, EffectContextHandle, 1.f))
 	{
 		FAuraGameplayEffectContext* AuraContext = static_cast<FAuraGameplayEffectContext*>(MutableSpec->GetContext().Get());
-		const TSharedPtr<FGameplayTag> DeBuffDamageType = MakeShareable(new FGameplayTag(DeBuffType));
+		const TSharedPtr<FGameplayTag> DeBuffDamageType = MakeShareable(new FGameplayTag(DebuffDamageType));
 		AuraContext->SetDamageType(DeBuffDamageType);
 		
 		Props.TargetASC->ApplyGameplayEffectSpecToSelf(*MutableSpec);

@@ -157,6 +157,7 @@ void AAuraCharacter::InitAbilityActorInfo()
 	AbilitySystemComponent = PlayerStateBase->GetAbilitySystemComponent();
 	Cast<UAuraAbilitySystemComponent>(AbilitySystemComponent)->AbilityActorInfoSet();
 	AttributeSet = PlayerStateBase->GetAttributeSet();
+	OnASCRegisteredDelegate.Broadcast(AbilitySystemComponent);
 	//初始化ASC
 	AbilitySystemComponent->InitAbilityActorInfo(PlayerStateBase, this);
 

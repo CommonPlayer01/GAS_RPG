@@ -3,16 +3,16 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "AbilitySystemComponent.h"
 #include "GameplayTagContainer.h"
 #include "UObject/Interface.h"
 #include "CombatInterface.generated.h"
 
-// This class does not need to be modified.
-UINTERFACE(MinimalAPI, Blueprintable)
-class UCombatInterface : public UInterface
-{
-	GENERATED_BODY()
-};
+
+
+
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnASCRegistered, UAbilitySystemComponent*)
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnDeath, AActor*, DeadActor); //Actor死亡后的委托
 
 //蒙太奇动画和标签以及骨骼位置的映射，用于攻击技能获取和设置攻击范围
 USTRUCT(BlueprintType)
@@ -33,6 +33,13 @@ struct FTaggedMontage
 	FName CombatTipSocketName; //设置技能释放的位置
 };
 
+
+// This class does not need to be modified.
+UINTERFACE(MinimalAPI, Blueprintable)
+class UCombatInterface : public UInterface
+{
+	GENERATED_BODY()
+};
 
 /**
  * 
@@ -79,5 +86,8 @@ public:
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	ECharacterClass GetCharacterClass(); //获取当前角色的职业
+
+	virtual FOnASCRegistered& GetOnASCRegisteredDelegate() = 0; //获取ASC注册成功后的委托
+	virtual FOnDeath& GetOnDeathDelegate() = 0; //获取死亡委托
 
 };

@@ -6,12 +6,18 @@
 #include "AbilitySystemComponent.h"
 #include "AuraGameplayTags.h"
 #include "AbilitySystem/AuraAbilitySystemComponent.h"
+#include "AbilitySystem/Debuff/DebuffNiagaraComponent.h"
 #include "Aura/Aura.h"
 #include "Components/CapsuleComponent.h"
 
 // Sets default values
 AAuraCharacterBase::AAuraCharacterBase()
 {
+	//初始化火焰负面效果组件
+	BurnDebuffComponent = CreateDefaultSubobject<UDebuffNiagaraComponent>("BurnDebuffComponent");
+	BurnDebuffComponent->SetupAttachment(GetRootComponent());
+	BurnDebuffComponent->DebuffTag = FAuraGameplayTags::Get().Debuff_Burn; //设置匹配的负面标签
+
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
 	//设置角色不会和相机碰撞
@@ -90,6 +96,16 @@ TArray<FTaggedMontage> AAuraCharacterBase::GetAttackMontages_Implementation()
 ECharacterClass AAuraCharacterBase::GetCharacterClass_Implementation()
 {
 	return CharacterClass;
+}
+
+FOnASCRegistered& AAuraCharacterBase::GetOnASCRegisteredDelegate()
+{
+	return OnASCRegisteredDelegate;
+}
+
+FOnDeath& AAuraCharacterBase::GetOnDeathDelegate()
+{
+	return OnDeath;
 }
 
 // Called when the game starts or when spawned
