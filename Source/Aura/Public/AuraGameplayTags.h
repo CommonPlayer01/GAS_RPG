@@ -86,6 +86,7 @@ public:
 	FGameplayTag Abilities_Lightning_Electrocute; //雷击技能标签
 
 	FGameplayTag Cooldown_Fire_FireBolt; //火球术冷却标签
+	FGameplayTag Cooldown_Lighting_Electrocute; //火球术冷却标签
 	
 	FGameplayTag Montage_Attack_Weapon; //使用武器攻击蒙太奇标签
 	FGameplayTag Montage_Attack_RightHand; //右手攻击蒙太奇标签

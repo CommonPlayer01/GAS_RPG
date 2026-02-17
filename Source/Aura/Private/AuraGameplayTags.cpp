@@ -388,6 +388,11 @@ void FAuraGameplayTags::InitializeInputGameplayTags()
 		FName("Cooldown.Fire.FireBolt"),
 		FString("火球术冷却标签")
 		);
+	GameplayTags.Cooldown_Lighting_Electrocute = UGameplayTagsManager::Get()
+	.AddNativeGameplayTag(
+		FName("Cooldown.Lightning.Electrocute"),
+		FString("闪电链冷却标签")
+		);
 
 
 	/*

@@ -393,3 +393,61 @@ FGameplayEffectContextHandle UAuraAbilitySystemLibrary::ApplyDamageEffect(const 
 	return EffectContextHandle;
 }
 
+TArray<FRotator> UAuraAbilitySystemLibrary::EvenlySpacedRotators(const FVector& Forward, const FVector& Axis, float Spread, int32 NumRotators)
+{
+	TArray<FRotator> Rotators;
+    
+	// 1. 计算扇形的起点（最左侧/最边缘的向量）
+	// 将正前方向量绕指定轴逆时针旋转一半的分布角度
+	const FVector LeftOfSpread = Forward.RotateAngleAxis(-Spread / 2.f, Axis); 
+    
+	if(NumRotators > 1)
+	{
+		// 2. 计算每个旋转增量（步长）
+		// 注意：这里将总角度除以数量，每个旋转将位于步长的“中心点”
+		const float DeltaSpread = Spread / NumRotators; 
+
+		for(int32 i=0; i<NumRotators; i++)
+		{
+			// 3. 计算当前分布方向
+			// i + 0.5f 是关键：它确保方向是在每个小扇形区域的中间，从而实现完美的对称分布
+			const FVector Direction = LeftOfSpread.RotateAngleAxis(DeltaSpread * (i + 0.5f), Axis); 
+          
+			// 将向量转换为旋转量并存入数组
+			Rotators.Add(Direction.Rotation());
+		}
+	}
+	else
+	{
+		// 4. 特殊处理：如果只需要 1 个方向，直接返回正前方向
+		Rotators.Add(Forward.Rotation());
+	}
+
+	return Rotators;
+}
+TArray<FVector> UAuraAbilitySystemLibrary::EvenlyRotatedVectors(const FVector& Forward, const FVector& Axis, float Spread, int32 NumVectors)
+{
+	TArray<FVector> Vectors;
+	
+	const FVector LeftOfSpread = Forward.RotateAngleAxis(-Spread / 2.f, Axis); //获取到最左侧的角度
+	
+	if(NumVectors > 1)
+	{
+		const float DeltaSpread = Spread / NumVectors; //技能分的段数
+
+		for(int32 i=0; i<NumVectors; i++)
+		{
+			const FVector Direction = LeftOfSpread.RotateAngleAxis(DeltaSpread * (i + 0.5f), Axis); //获取当前分段的角度
+			Vectors.Add(Direction);
+		}
+	}
+	else
+	{
+		//如果只需要一个，则将朝向放入即可
+		Vectors.Add(Forward);
+	}
+
+	return Vectors;
+}
+
+

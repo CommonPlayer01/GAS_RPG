@@ -6,7 +6,7 @@
 #include "AbilitySystemComponent.h"
 #include "Aura/Aura.h"
 
-UTargetDataUnderMouse* UTargetDataUnderMouse::CreateTargetDataUnderMouse(UGameplayAbility* OwningAbility)
+UTargetDataUnderMouse* UTargetDataUnderMouse::  CreateTargetDataUnderMouse(UGameplayAbility* OwningAbility)
 {
 	UTargetDataUnderMouse* MyObj = NewAbilityTask<UTargetDataUnderMouse>(OwningAbility);
 	return MyObj;
