@@ -310,11 +310,15 @@ void UAuraAttributeSet::HandleIncomingDamage(const FEffectProperties& Props)
 				
 		}else
 		{
-			//激活受击技能
-			FGameplayTagContainer TagContainer;
-			TagContainer.AddTag(FAuraGameplayTags::Get().Effects_HitReact);
-			Props.TargetASC->TryActivateAbilitiesByTag(TagContainer); //根据tag标签激活技能
-			// GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, FString::Printf(TEXT("ActivateAbilitiesByTag")));
+			if (Props.TargetCharacter->Implements<UCombatInterface>() && !ICombatInterface::Execute_IsBeingShocked(Props.SourceCharacter))
+			{
+				//激活受击技能
+				FGameplayTagContainer TagContainer;
+				TagContainer.AddTag(FAuraGameplayTags::Get().Effects_HitReact);
+				Props.TargetASC->TryActivateAbilitiesByTag(TagContainer); //根据tag标签激活技能
+				// GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, FString::Printf(TEXT("ActivateAbilitiesByTag")));
+			}
+
 		}
 
 		//获取格挡和暴击
@@ -371,8 +375,7 @@ void UAuraAttributeSet::HandleIncomingXP(const FEffectProperties& Props)
 void UAuraAttributeSet::Debuff(const FEffectProperties& Props)
 {
 	//获取负面效果相关参数
-	const FGameplayTag DamageType = UAuraAbilitySystemLibrary::GetDamageType(Props.EffectContextHandle);
-	const FGameplayTag DebuffDamageType = FAuraGameplayTags::Get().DamageTypesToDebuffs[DamageType];
+	const FGameplayTag DebuffDamageType = UAuraAbilitySystemLibrary::GetDebuffDamageType(Props.EffectContextHandle);
 	const float DeBuffDamage = UAuraAbilitySystemLibrary::GetDebuffDamage(Props.EffectContextHandle);
 	const float DeBuffDuration = UAuraAbilitySystemLibrary::GetDebuffDuration(Props.EffectContextHandle);
 	const float DeBuffFrequency = UAuraAbilitySystemLibrary::GetDebuffFrequency(Props.EffectContextHandle);
@@ -389,6 +392,8 @@ void UAuraAttributeSet::Debuff(const FEffectProperties& Props)
 	Effect->bExecutePeriodicEffectOnApplication = false; //在应用后不会立即触发，而是在经过了Period后才会触发
 	Effect->PeriodicInhibitionPolicy = EGameplayEffectPeriodInhibitionRemovedPolicy::NeverReset; //设置每次应用后不会重置触发时间
 
+	
+	
 	//设置可叠加层数
 	Effect->StackingType = EGameplayEffectStackingType::AggregateBySource; //设置GE应用基于释放者查看
 	Effect->StackLimitCount = 1; //设置叠加层数
@@ -403,8 +408,20 @@ void UAuraAttributeSet::Debuff(const FEffectProperties& Props)
 	UTargetTagsGameplayEffectComponent& TargetTagsGameplayEffectComponent = Effect->AddComponent<UTargetTagsGameplayEffectComponent>();
 	FInheritedTagContainer InheritableOwnedTagsContainer = TargetTagsGameplayEffectComponent.GetConfiguredTargetTagChanges(); //获取到标签容器
 	InheritableOwnedTagsContainer.AddTag(DebuffDamageType); //添加标签
+	
+
+	const FAuraGameplayTags& GameplayTags = FAuraGameplayTags::Get();
+	if (DebuffDamageType.MatchesTagExact(GameplayTags.Debuff_Stun))
+	{
+		InheritableOwnedTagsContainer.AddTag(GameplayTags.Player_Block_CursorTrace); //添加标签
+		InheritableOwnedTagsContainer.AddTag(GameplayTags.Player_Block_InputHold); //添加标签
+		InheritableOwnedTagsContainer.AddTag(GameplayTags.Player_Block_InputPressed); //添加标签
+		InheritableOwnedTagsContainer.AddTag(GameplayTags.Player_Block_InputReleased); //添加标签
+
+	}
 	TargetTagsGameplayEffectComponent.SetAndApplyTargetTagChanges(InheritableOwnedTagsContainer); //应用并更新
 
+	
 	//设置属性修改
 	const int32 Index = Effect->Modifiers.Num(); //获取当前修改属性的Modifiers的长度，也就是下一个添加的modify的下标索引
 	Effect->Modifiers.Add(FGameplayModifierInfo()); //添加一个新的Modify

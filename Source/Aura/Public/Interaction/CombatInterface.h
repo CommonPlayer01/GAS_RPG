@@ -12,7 +12,7 @@
 
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnASCRegistered, UAbilitySystemComponent*)
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnDeath, AActor*, DeadActor); //Actor死亡后的委托
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnDeathSignatured, AActor*, DeadActor); //Actor死亡后的委托
 
 //蒙太奇动画和标签以及骨骼位置的映射，用于攻击技能获取和设置攻击范围
 USTRUCT(BlueprintType)
@@ -59,11 +59,14 @@ public:
 	
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
 	void UpdateFacingTarget(const FVector& Target);
-
+	
+	
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	UAnimMontage* GetHitReactMontage(); //获取受击蒙太奇动画
 
 	virtual void Die() = 0;
+	virtual FOnDeathSignatured& GetOnDeathDelegate() = 0; //获取死亡委托
+	
 
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
 	void SetInShockLoop(bool bInLoop);
@@ -88,6 +91,19 @@ public:
 	ECharacterClass GetCharacterClass(); //获取当前角色的职业
 
 	virtual FOnASCRegistered& GetOnASCRegisteredDelegate() = 0; //获取ASC注册成功后的委托
-	virtual FOnDeath& GetOnDeathDelegate() = 0; //获取死亡委托
+
+	/**
+	 * 获取角色是否处于闪电链攻击状态
+	 * @return 布尔值，如果处于返回true
+	 */
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	bool IsBeingShocked() const;
+
+	/**
+	 * 设置角色是否处于闪电链攻击状态
+	 * @param bInShock 
+	 */
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void SetIsBeingShocked(bool bInShock);
 
 };

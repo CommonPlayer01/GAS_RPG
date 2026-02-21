@@ -42,8 +42,14 @@ public:
 	virtual int32 GetPlayerLevel_Implementation() override;
 	/* ICombatInterface战斗接口 结束 */
 
+	virtual void OnRep_Stunned() override;
+	virtual void OnRep_Burned() override;
+	
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TObjectPtr<UNiagaraComponent> LevelUpNiagaraComponent; //升级特效组件
+
+	virtual void StunTagChanged(const FGameplayTag CallbackTag, int32 NewCount) override;
 
 	
 private:

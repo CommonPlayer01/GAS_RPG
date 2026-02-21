@@ -25,10 +25,11 @@ bool FAuraGameplayEffectContext::NetSerialize(FArchive& Ar, UPackageMap* Map, bo
        if (DebuffDuration > 0.f) RepBits |= 1 << 11;
        if (DebuffFrequency > 0.f) RepBits |= 1 << 12;
        if (DamageType.IsValid()) RepBits |= 1 << 13; // 伤害类型标签
+       if (DebuffDamageType.IsValid()) RepBits |= 1 << 14; // 伤害类型标签
     }
 
-    // 2. 将位掩码发送出去（告知接收端：我总共用了 14 位来描述后续数据）
-    Ar.SerializeBits(&RepBits, 14);
+    // 2. 将位掩码发送出去（告知接收端：我总共用了 15 位来描述后续数据）
+    Ar.SerializeBits(&RepBits, 15);
 
     // 3. 根据位掩码的标记，按顺序进行真正的读/写操作
     if (RepBits & (1 << 0)) Ar << Instigator;
@@ -73,6 +74,14 @@ bool FAuraGameplayEffectContext::NetSerialize(FArchive& Ar, UPackageMap* Map, bo
        }
        DamageType->NetSerialize(Ar, Map, bOutSuccess);
     }
+   if (RepBits & (1 << 14))
+   {
+      if (Ar.IsLoading()) // 接收端对共享指针进行合法性检查和初始化
+      {
+         if (!DebuffDamageType.IsValid()) DebuffDamageType = TSharedPtr<FGameplayTag>(new FGameplayTag());
+      }
+      DebuffDamageType->NetSerialize(Ar, Map, bOutSuccess);
+   }
 
     // 4. 接收完成后，初始化相关组件引用（如 ASC）
     if (Ar.IsLoading())

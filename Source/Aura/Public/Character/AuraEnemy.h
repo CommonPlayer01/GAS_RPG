@@ -52,15 +52,15 @@ public:
 
 	UPROPERTY(BlueprintReadOnly, Category="Combat")
 	bool bHitReacting = false; //当前是否处于被攻击状态
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Combat")
-	float BaseWalkSpeed = 250.f; //当前角色的最大移动速度
+	
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Combat")
 	float LifeSpan = 5.f; //设置死亡后的存在时间
 
 	UPROPERTY(BlueprintReadWrite, Category="Combat")
 	TObjectPtr<AActor> CombatTarget;
+
+	virtual void StunTagChanged(const FGameplayTag CallbackTag, int32 NewCount) override;
 
 protected:
 	virtual void BeginPlay() override;

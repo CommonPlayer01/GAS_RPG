@@ -121,6 +121,7 @@ void UExecCalc_Damage::DetermineDebuff(
              // 标记 Debuff 触发成功，并记录当前的伤害类型
              UAuraAbilitySystemLibrary::SetIsSuccessfulDebuff(ContextHandle, true);
              UAuraAbilitySystemLibrary::SetDamageType(ContextHandle, DamageType);
+             UAuraAbilitySystemLibrary::SetDebuffDamageType(ContextHandle, DebuffType);
              
              // 从 Spec 中提取 Debuff 的具体参数：伤害、持续时间、触发频率
              const float DebuffDamage = Spec.GetSetByCallerMagnitude(GameplayTags.Debuff_Damage, false, -1.f);

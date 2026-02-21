@@ -40,13 +40,15 @@ AAuraProjectile::AAuraProjectile()
 
 void AAuraProjectile::BeginPlay()
 {
-	Super::BeginPlay();	
+	Super::BeginPlay();
+	//设置此物体的存在时间
+	SetLifeSpan(LifeSpan);
+	SetReplicateMovement(true);
+	
 	Sphere->OnComponentBeginOverlap.AddDynamic(this, &AAuraProjectile::OnSphereOverlap);
 	//添加一个音效，并附加到根组件上面，在技能移动时，声音也会跟随移动
 	LoopingSoundComponent = UGameplayStatics::SpawnSoundAttached(LoopingSound, GetRootComponent());
-	
-	//设置此物体的存在时间
-	SetLifeSpan(LifeSpan);
+
 }
 
 void AAuraProjectile::Destroyed()
@@ -69,26 +71,12 @@ void AAuraProjectile::OnSphereOverlap(
 	const FHitResult& SweepResult)
 {
 
-	// if (GetInstigator() == OtherActor)
-	// {
-	// 	return;
-	// }
+	if (DamageEffectParams.SourceAbilitySystemComponent == nullptr) return;
   	AActor* SourceAvatarActor = DamageEffectParams.SourceAbilitySystemComponent->GetAvatarActor();
-	// if (!DamageEffectHandle.Data.IsValid() || DamageEffectHandle.Data.Get()->GetContext().GetEffectCauser() == OtherActor)
-	// {
-	// 	return;
-	// }
-
 	if (SourceAvatarActor == OtherActor) return;
 	
-	if (!UAuraAbilitySystemLibrary::IsNotFriend(SourceAvatarActor, OtherActor))
-	{
-		return;
-	} 
-	if (!bHit)
-	{
-		OnHit();
-	}
+	if (!UAuraAbilitySystemLibrary::IsNotFriend(SourceAvatarActor, OtherActor)) return;
+	if (!bHit) OnHit();
 	//在重叠后，销毁自身
 	if(HasAuthority())
 	{

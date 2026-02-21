@@ -24,7 +24,7 @@ class AURA_API AAuraCharacterBase : public ACharacter, public IAbilitySystemInte
 public:
 	// Sets default values for this character's properties
 	AAuraCharacterBase();
-	
+	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 	UAttributeSet* GetAttributeSet() const { return AttributeSet; } //获取as
 
@@ -38,10 +38,14 @@ public:
 	
 	virtual ECharacterClass GetCharacterClass_Implementation() override;
 	virtual FOnASCRegistered& GetOnASCRegisteredDelegate() override;
-	virtual FOnDeath& GetOnDeathDelegate() override; //角色死亡委托
+	virtual FOnDeathSignatured& GetOnDeathDelegate() override; //角色死亡委托
+	virtual void SetIsBeingShocked_Implementation(bool bInShock) override;
+	virtual bool IsBeingShocked_Implementation() const override;
+
 	
 	FOnASCRegistered OnASCRegisteredDelegate;//ASC注册成功委托
-	FOnDeath OnDeath; //角色死亡后触发的死亡委托
+	FOnDeathSignatured OnDeathDelegate; //角色死亡后触发的死亡委托
+	
 
 	UFUNCTION(NetMulticast, Reliable)
 	virtual void MulticastHandleDeath();
@@ -49,12 +53,40 @@ public:
 	UPROPERTY(EditAnywhere, Category="Combat")
 	TArray<FTaggedMontage> AttackMontage;
 
+	//当前角色是否处于眩晕状态
+	UPROPERTY(ReplicatedUsing=OnRep_Stunned, BlueprintReadOnly)
+	bool bIsStunned = false;
+
+	//当前角色是否处于灼烧状态
+	UPROPERTY(ReplicatedUsing=OnRep_Burned, BlueprintReadOnly)
+	bool bIsBurned = false;
+
+	//当前角色是否处于受击状态
+	UPROPERTY(Replicated, BlueprintReadOnly)
+	bool bIsBeingShocked  = false;
+
+	UFUNCTION()
+	virtual void OnRep_Stunned();
+
+	UFUNCTION()
+	virtual void OnRep_Burned();
+
+	//注册用于监听负面标签变动的函数
+	void DeBuffRegisterChanged();
+
 	
 protected:
 	virtual void BeginPlay() override;
 	
 	UPROPERTY(BlueprintReadOnly)
 	bool bDead = false;
+
+	//当前角色的最大移动速度
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Combat")
+	float BaseWalkSpeed = 600.f;
+
+	//眩晕标签变动后的回调
+	virtual void StunTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Combat)
 	TObjectPtr<USkeletalMeshComponent> Weapon;
@@ -95,6 +127,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere) //火焰负面效果表现组件
 	TObjectPtr<UDebuffNiagaraComponent> BurnDebuffComponent;
+
+	UPROPERTY(VisibleAnywhere) //眩晕负面效果表现组件
+	TObjectPtr<UDebuffNiagaraComponent> StunDebuffComponent;
 
 private:
 
