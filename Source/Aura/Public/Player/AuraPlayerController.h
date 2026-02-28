@@ -8,6 +8,7 @@
 #include "AuraPlayerController.generated.h"
 
 
+class AMagicCircle;
 class UNiagaraSystem;
 class UDamageTextComponent;
 class USplineComponent;
@@ -31,6 +32,14 @@ public:
 
 	UFUNCTION(Client, Reliable)
 	void ShowDamageNumber(float DamageAmount, ACharacter* TargetCharacter, bool bBlocked, bool bCriticalHit); //在每个客户端显示伤害数值
+
+	//显示魔法光圈 并设置光圈贴花材质
+	UFUNCTION(BlueprintCallable)
+	void ShowMagicCircle(UMaterialInterface* DecalMaterial = nullptr);
+
+	//隐藏魔法光圈
+	UFUNCTION(BlueprintCallable)
+	void HideMagicCircle() const; 
 
 protected:
 	virtual void BeginPlay() override; //游戏开始时触发
@@ -91,5 +100,15 @@ private:
 	
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<UDamageTextComponent> DamageTextComponentClass;
+
+	//创建奥数光圈使用的类
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<AMagicCircle> MagicCircleClass;
+
+	//存储魔法光圈的属性，不需要暴露给蓝图
+	UPROPERTY()
+	TObjectPtr<AMagicCircle> MagicCircle;
+
+	void UpdateMagicCircleLocation() const; //每一帧调用，更新魔法光圈的位置
 
 };

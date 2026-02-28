@@ -349,12 +349,17 @@ void UAuraAttributeSet::HandleIncomingXP(const FEffectProperties& Props)
 		const int32 NumLevelUps = NewLevel - CurrentLevel; //查看等级是否有变化
 		if(NumLevelUps > 0)
 		{
-			//获取升级提供的技能点和属性点
-			int32 AttributePointsReward = IPlayerInterface::Execute_GetAttributePointsReward(Props.SourceCharacter, CurrentLevel);
-			int32 SpellPointsReward = IPlayerInterface::Execute_GetSpellPointsReward(Props.SourceCharacter, CurrentLevel);
-
-			//提升等级，增加角色技能点和属性点
 			IPlayerInterface::Execute_AddToPlayerLevel(Props.SourceCharacter, NumLevelUps);
+			//获取升级提供的技能点和属性点
+			int32 AttributePointsReward = 0;
+			int32 SpellPointsReward = 0;
+			for (int32 i = 0; i  < NumLevelUps; i++)
+			{
+				AttributePointsReward += IPlayerInterface::Execute_GetAttributePointsReward(Props.SourceCharacter, CurrentLevel + 1);
+				SpellPointsReward += IPlayerInterface::Execute_GetSpellPointsReward(Props.SourceCharacter, CurrentLevel + 1);
+			}
+			
+			//提升等级，增加角色技能点和属性点
 			IPlayerInterface::Execute_AddToAttributePoints(Props.SourceCharacter, AttributePointsReward);
 			IPlayerInterface::Execute_AddToSpellPoints(Props.SourceCharacter, SpellPointsReward);
 			IPlayerInterface::Execute_LevelUp(Props.SourceCharacter); //升级

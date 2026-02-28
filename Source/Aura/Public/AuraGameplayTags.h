@@ -85,6 +85,11 @@ public:
 	FGameplayTag Abilities_Fire_FireBolt; //火球术技能标签
 	FGameplayTag Abilities_Lightning_Electrocute; //雷击技能标签
 
+	FGameplayTag Abilities_Passive_HaloOfProtection; //被动技能-守护光环
+	FGameplayTag Abilities_Passive_LifeSiphon; //被动技能-生命回复
+	FGameplayTag Abilities_Passive_ManaSiphon; //被动技能-蓝量回复
+
+
 	FGameplayTag Cooldown_Fire_FireBolt; //火球术冷却标签
 	FGameplayTag Cooldown_Lighting_Electrocute; //火球术冷却标签
 	
