@@ -77,8 +77,15 @@ void UAuraAbilitySystemComponent::AbilityInputTagPressed(const FGameplayTag& Inp
 	{
 		if(AbilitySpec.GetDynamicSpecSourceTags().HasTagExact(InputTag))
 		{
+			if (AbilitySpec.IsActive())
+			{
+				InvokeReplicatedEvent(EAbilityGenericReplicatedEvent::InputPressed, AbilitySpec.Handle, ScopedPredictionKey);
+			}else
+			{
+				TryActivateAbility(AbilitySpec.Handle);
+			}
 			AbilitySpecInputPressed(AbilitySpec);
-			TryActivateAbility(AbilitySpec.Handle);
+			
 		}
 	}	
 }
@@ -123,12 +130,13 @@ void UAuraAbilitySystemComponent::AbilityInputTagReleased(const FGameplayTag& In
 	for(auto AbilitySpec : GetActivatableAbilities())
 	{
 		// 再次通过 GetDynamicSpecSourceTags() 检查该技能是否绑定到此 InputTag
-		if(AbilitySpec.GetDynamicSpecSourceTags().HasTagExact(InputTag))
+		if(AbilitySpec.GetDynamicSpecSourceTags().HasTagExact(InputTag) && AbilitySpec.IsActive())
 		{
 			// 通知 GAS：该技能对应的输入已被释放
 			// 这会触发技能内部的 InputReleased() 函数
 			// 常用于结束蓄力、触发释放效果（如射出箭矢、释放火球等）
 			AbilitySpecInputReleased(AbilitySpec);
+			InvokeReplicatedEvent(EAbilityGenericReplicatedEvent::InputReleased, AbilitySpec.Handle, ScopedPredictionKey);
 			
 		}
 	}
