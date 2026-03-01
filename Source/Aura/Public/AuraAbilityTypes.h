@@ -48,6 +48,23 @@ struct FDamageEffectParams
 
 	UPROPERTY(BlueprintReadWrite)
 	float DebuffFrequency = 0.f; //负面效果触发频率
+
+	//当前伤害类型是否为范围伤害
+	UPROPERTY(BlueprintReadWrite)
+	bool bIsRadialDamage = false;
+
+	//内半径：在此半径内的所有目标都将受到完整的伤害
+	UPROPERTY(BlueprintReadWrite)
+	float RadialDamageInnerRadius = 0.f;
+
+	//外半径：超过这个距离的目标受到最小伤害，最小伤害如果设置为0，则圈外不受到伤害
+	UPROPERTY(BlueprintReadWrite)
+	float RadialDamageOuterRadius = 0.f;
+
+	//伤害源的中心点
+	UPROPERTY(BlueprintReadWrite)
+	FVector RadialDamageOrigin = FVector::ZeroVector;
+
 };
 
 
@@ -71,6 +88,10 @@ public:
 	{
 		return DebuffDamageType;
 	}
+	bool IsRadialDamage() const { return bIsRadialDamage; }
+	float GetRadialDamageInnerRadius() const { return RadialDamageInnerRadius; }
+	float GetRadialDamageOuterRadius() const { return RadialDamageOuterRadius; }
+	FVector GetRadialDamageOrigin() const { return RadialDamageOrigin; }
 
 
 	void SetIsBlockedHit(const bool bInIsBlockedHit) { bIsBlockedHit = bInIsBlockedHit; }
@@ -81,6 +102,10 @@ public:
 	void SetDebuffFrequency(float InFrequency) { DebuffFrequency = InFrequency; }
 	void SetDamageType(TSharedPtr<FGameplayTag> InDamageType) { DamageType = InDamageType; }
 	void SetDebuffDamageType(TSharedPtr<FGameplayTag> InDamageType) { DebuffDamageType = InDamageType; }
+	void SetIsRadialDamage(bool bInIsRadialDamage) { bIsRadialDamage = bInIsRadialDamage; }
+	void SetRadialDamageInnerRadius(float InRadialDamageInnerRadius) { RadialDamageInnerRadius = InRadialDamageInnerRadius; }
+	void SetRadialDamageOuterRadius(float InRadialDamageOuterRadius) { RadialDamageOuterRadius = InRadialDamageOuterRadius; }
+	void SetRadialDamageOrigin(const FVector& InRadialDamageOrigin) { RadialDamageOrigin = InRadialDamageOrigin; }
 	
 	/** 返回用于序列化的实际结构体 */
 	virtual UScriptStruct* GetScriptStruct() const override
@@ -126,6 +151,22 @@ protected:
 	TSharedPtr<FGameplayTag> DamageType; //负面效果的伤害类型
 
 	TSharedPtr<FGameplayTag> DebuffDamageType; //负面效果的伤害类型
+
+	//当前伤害类型是否为范围伤害
+	UPROPERTY()
+	bool bIsRadialDamage = false;
+
+	//内半径：在此半径内的所有目标都将受到完整的伤害
+	UPROPERTY()
+	float RadialDamageInnerRadius = 0.f;
+
+	//外半径：超过这个距离的目标受到最小伤害，最小伤害如果设置为0，则圈外不受到伤害
+	UPROPERTY()
+	float RadialDamageOuterRadius = 0.f;
+
+	//伤害源的中心点
+	UPROPERTY()
+	FVector RadialDamageOrigin = FVector::ZeroVector;
 };
 
 template<>

@@ -26,10 +26,18 @@ bool FAuraGameplayEffectContext::NetSerialize(FArchive& Ar, UPackageMap* Map, bo
        if (DebuffFrequency > 0.f) RepBits |= 1 << 12;
        if (DamageType.IsValid()) RepBits |= 1 << 13; // 伤害类型标签
        if (DebuffDamageType.IsValid()) RepBits |= 1 << 14; // 伤害类型标签
+
+       if (bIsRadialDamage)
+       {
+          RepBits |= 1 << 15;
+          if (RadialDamageInnerRadius > 0.f) RepBits |= 1 << 16;
+          if (RadialDamageOuterRadius > 0.f) RepBits |= 1 << 17;
+          if (!RadialDamageOrigin.IsZero())  RepBits |= 1 << 18;
+       }
     }
 
     // 2. 将位掩码发送出去（告知接收端：我总共用了 15 位来描述后续数据）
-    Ar.SerializeBits(&RepBits, 15);
+    Ar.SerializeBits(&RepBits, 19);
 
     // 3. 根据位掩码的标记，按顺序进行真正的读/写操作
     if (RepBits & (1 << 0)) Ar << Instigator;
@@ -81,6 +89,14 @@ bool FAuraGameplayEffectContext::NetSerialize(FArchive& Ar, UPackageMap* Map, bo
          if (!DebuffDamageType.IsValid()) DebuffDamageType = TSharedPtr<FGameplayTag>(new FGameplayTag());
       }
       DebuffDamageType->NetSerialize(Ar, Map, bOutSuccess);
+   }
+   if (RepBits & (1 << 15))
+   {
+      Ar << bIsRadialDamage;
+		
+      if (RepBits & (1 << 16))    Ar << RadialDamageInnerRadius;
+      if (RepBits & (1 << 17))   Ar << RadialDamageOuterRadius;
+      if (RepBits & (1 << 18))   RadialDamageOrigin.NetSerialize(Ar, Map, bOutSuccess);
    }
 
     // 4. 接收完成后，初始化相关组件引用（如 ASC）

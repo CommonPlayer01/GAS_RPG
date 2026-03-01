@@ -10,6 +10,7 @@
 #include "AbilitySystem/AuraAttributeSet.h"
 #include "AbilitySystem/Data/CharacterClassInfo.h"
 #include "Interaction/CombatInterface.h"
+#include "Kismet/GameplayStatics.h"
 
 struct AuraDamageStatics 
 {
@@ -124,7 +125,7 @@ void UExecCalc_Damage::DetermineDebuff(
              UAuraAbilitySystemLibrary::SetDebuffDamageType(ContextHandle, DebuffType);
              
              // 从 Spec 中提取 Debuff 的具体参数：伤害、持续时间、触发频率
-             const float DebuffDamage = Spec.GetSetByCallerMagnitude(GameplayTags.Debuff_Damage, false, -1.f);
+             const float DebuffDamage = Spec.GetSetByCallerMagnitude(DebuffType, false, -1.f);
              const float DebuffDuration = Spec.GetSetByCallerMagnitude(GameplayTags.Debuff_Duration, false, -1.f);
              const float DebuffFrequency = Spec.GetSetByCallerMagnitude(GameplayTags.Debuff_Frequency, false, -1.f);
              
@@ -226,31 +227,31 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 		// 应用抗性百分比减免
 		DamageTypeValue *= ( 100.f - Resistance ) / 100.f;
 
-		   // // --- 特殊处理：径向伤害（AOE 衰减） ---
-		   // if (UAuraAbilitySystemLibrary::IsRadialDamage(EffectContextHandle))
-		   // {
-		   //    // 如果是径向伤害，我们需要利用虚幻原生的 ApplyRadialDamageWithFalloff 来计算物理距离上的伤害衰减
-		   //    if (ICombatInterface* CombatInterface = Cast<ICombatInterface>(TargetAvatar))
-		   //    {
-		   //       // 绑定 Lambda 表达式到目标的受损委托，捕获原生引擎计算出的最终衰减值
-		   //       CombatInterface->GetOnDamageSignature().AddLambda([&](float DamageAmount)
-		   //       {
-		   //          DamageTypeValue = DamageAmount;
-		   //       });
-		   //    }
-		   //    UGameplayStatics::ApplyRadialDamageWithFalloff(
-		   //       TargetAvatar,
-		   //       DamageTypeValue,
-		   //       0.f, // 最小伤害
-		   //       UAuraAbilitySystemLibrary::GetRadialDamageOrigin(EffectContextHandle),
-		   //       UAuraAbilitySystemLibrary::GetRadialDamageInnerRadius(EffectContextHandle),
-		   //       UAuraAbilitySystemLibrary::GetRadialDamageOuterRadius(EffectContextHandle),
-		   //       1.f, // 伤害衰减指数
-		   //       UDamageType::StaticClass(),
-		   //       TArray<AActor*>(), // 忽略的 Actors
-		   //       SourceAvatar,
-		   //       nullptr);
-		   // }
+	   // --- 特殊处理：径向伤害（AOE 衰减） ---
+	   if (UAuraAbilitySystemLibrary::IsRadialDamage(EffectContextHandle))
+	   {
+	      // 如果是径向伤害，我们需要利用虚幻原生的 ApplyRadialDamageWithFalloff 来计算物理距离上的伤害衰减
+	      if (ICombatInterface* CombatInterface = Cast<ICombatInterface>(TargetAvatar))
+	      {
+	         // 绑定 Lambda 表达式到目标的受损委托，捕获原生引擎计算出的最终衰减值
+	         CombatInterface->GetOnDamageDelegate().AddLambda([&](float DamageAmount)
+	         {
+	            DamageTypeValue = DamageAmount;
+	         });
+	      }
+	      UGameplayStatics::ApplyRadialDamageWithFalloff(
+	         TargetAvatar,
+	         DamageTypeValue,
+	         0.f, // 最小伤害
+	         UAuraAbilitySystemLibrary::GetRadialDamageOrigin(EffectContextHandle),
+	         UAuraAbilitySystemLibrary::GetRadialDamageInnerRadius(EffectContextHandle),
+	         UAuraAbilitySystemLibrary::GetRadialDamageOuterRadius(EffectContextHandle),
+	         1.f, // 伤害衰减指数
+	         UDamageType::StaticClass(),
+	         TArray<AActor*>(), // 忽略的 Actors
+	         SourceAvatar,
+	         nullptr);
+	   }
 		   
 		   Damage += DamageTypeValue;
 	}

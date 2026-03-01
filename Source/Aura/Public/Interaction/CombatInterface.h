@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "AbilitySystemComponent.h"
 #include "GameplayTagContainer.h"
+#include "AbilitySystem/Data/CharacterClassInfo.h"
 #include "UObject/Interface.h"
 #include "CombatInterface.generated.h"
 
@@ -13,6 +14,8 @@
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnASCRegistered, UAbilitySystemComponent*)
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnDeathSignatured, AActor*, DeadActor); //Actor死亡后的委托
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnDamageSignature, float /*范围伤害造成的最终数值*/); //返回范围伤害能够对自身造成的伤害，在TakeDamage里广播
+
 
 //蒙太奇动画和标签以及骨骼位置的映射，用于攻击技能获取和设置攻击范围
 USTRUCT(BlueprintType)
@@ -66,6 +69,12 @@ public:
 
 	virtual void Die() = 0;
 	virtual FOnDeathSignatured& GetOnDeathDelegate() = 0; //获取死亡委托
+
+	/**
+	 * 获取角色受到伤害触发的委托，由于委托是创建在角色基类里的，这里可以通过添加struct来实现前向声明，不需要在头部声明一遍。
+	 * @return 委托
+	 */
+	virtual FOnDamageSignature& GetOnDamageDelegate() = 0; 
 	
 
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
@@ -105,5 +114,8 @@ public:
 	 */
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	void SetIsBeingShocked(bool bInShock);
+
+
+
 
 };

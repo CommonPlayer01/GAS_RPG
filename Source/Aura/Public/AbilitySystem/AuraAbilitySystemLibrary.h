@@ -86,6 +86,99 @@ public:
 	UFUNCTION(BlueprintPure, Category = "AuraAbilitySystemLibrary|GameplayEffects")
 	static FGameplayTag GetDebuffDamageType(const FGameplayEffectContextHandle& EffectContextHandle);
 
+	/**
+	 * 获取当前GE是否为范围伤害GE
+	 *
+	 * @param EffectContextHandle 当前GE的上下文句柄
+	 *
+	 * @return 如果是范围伤害 返回true
+	 *
+	 * @note 此属性是RPGAbilityTypes.h内自定义属性，可实现复制。
+	 */
+	UFUNCTION(BlueprintPure, Category="RPGAbilitySystemLibrary|GameplayEffects")
+	static bool IsRadialDamage(const FGameplayEffectContextHandle& EffectContextHandle);
+
+	/**
+	 * 获取当前GE 范围伤害内半径
+	 *
+	 * @param EffectContextHandle 当前GE的上下文句柄
+	 *
+	 * @return 返回负面效果触发间隔
+	 *
+	 * @note 此属性是RPGAbilityTypes.h内自定义属性，可实现复制。
+	 */
+	UFUNCTION(BlueprintPure, Category="RPGAbilitySystemLibrary|GameplayEffects")
+	static float GetRadialDamageInnerRadius(const FGameplayEffectContextHandle& EffectContextHandle);
+
+	/**
+	 * 获取当前GE 范围伤害外半径
+	 *
+	 * @param EffectContextHandle 当前GE的上下文句柄
+	 *
+	 * @return 返回负面效果触发间隔
+	 *
+	 * @note 此属性是RPGAbilityTypes.h内自定义属性，可实现复制。
+	 */
+	UFUNCTION(BlueprintPure, Category="RPGAbilitySystemLibrary|GameplayEffects")
+	static float GetRadialDamageOuterRadius(const FGameplayEffectContextHandle& EffectContextHandle);
+
+	/**
+	 * 获取当前GE 伤害中心点
+	 *
+	 * @param EffectContextHandle 当前GE的上下文句柄
+	 *
+	 * @return 攻击的击退会根据概率计算，如果有值，则为应用成功
+	 *
+	 * @note 此属性是RPGAbilityTypes.h内自定义属性，可实现复制。
+	 */
+	UFUNCTION(BlueprintPure, Category="RPGAbilitySystemLibrary|GameplayEffects")
+	static FVector GetRadialDamageOrigin(const FGameplayEffectContextHandle& EffectContextHandle);
+
+	/**
+	 * 设置GE是否为范围伤害
+	 *
+	 * @param EffectContextHandle 当前GE的上下文句柄
+	 * @param bInIsRadialDamage true为设置为范围伤害
+	 *
+	 * @note 此属性是RPGAbilityTypes.h内自定义属性，可实现复制。
+	 */
+	UFUNCTION(BlueprintCallable, Category="RPGAbilitySystemLibrary|GameplayEffects")
+	static void SetIsRadialDamage(UPARAM(ref) FGameplayEffectContextHandle& EffectContextHandle, bool bInIsRadialDamage);
+
+	/**
+	 * 设置GE 范围伤害 内半径距离
+	 *
+	 * @param EffectContextHandle 当前GE的上下文句柄
+	 * @param InRadialDamageInnerRadius 内半径距离 内半径内受到完整伤害
+	 *
+	 * @note 此属性是RPGAbilityTypes.h内自定义属性，可实现复制。
+	 */
+	UFUNCTION(BlueprintCallable, Category="RPGAbilitySystemLibrary|GameplayEffects")
+	static void SetRadialDamageInnerRadius(UPARAM(ref) FGameplayEffectContextHandle& EffectContextHandle, float InRadialDamageInnerRadius);
+
+	/**
+	 * 设置GE 范围伤害 外半径距离
+	 *
+	 * @param EffectContextHandle 当前GE的上下文句柄
+	 * @param InRadialDamageOuterRadius 外半径距离，超出此距离外的敌人将无法受到伤害
+	 *
+	 * @note 此属性是RPGAbilityTypes.h内自定义属性，可实现复制。
+	 */
+	UFUNCTION(BlueprintCallable, Category="RPGAbilitySystemLibrary|GameplayEffects")
+	static void SetRadialDamageOuterRadius(UPARAM(ref) FGameplayEffectContextHandle& EffectContextHandle, float InRadialDamageOuterRadius);
+	
+	/**
+	 * 设置GE伤害源的中心点
+	 *
+	 * @param EffectContextHandle 当前GE的上下文句柄
+	 * @param InRadialDamageOrigin 伤害源的中心点
+	 *
+	 * @note 此属性是RPGAbilityTypes.h内自定义属性，可实现复制。
+	 */
+	UFUNCTION(BlueprintCallable, Category="RPGAbilitySystemLibrary|GameplayEffects")
+	static void SetRadialDamageOrigin(UPARAM(ref) FGameplayEffectContextHandle& EffectContextHandle, const FVector& InRadialDamageOrigin);
+
+
 	/*
 	 * Effect Context Setters
 	 */
@@ -115,7 +208,9 @@ public:
 	static void SetDebuffDamageType(UPARAM(ref) FGameplayEffectContextHandle& EffectContextHandle, const FGameplayTag& InDamageType);
 
 
-	
+	/*
+	 * 游戏机制
+	 */
 	UFUNCTION(BlueprintCallable, Category = "AuraAbilitySystemLibrary|GameplayMechanics")
 	static void GetLivePlayersWithinRadius(const UObject* WorldContextObject, TArray<AActor*>& OutOverlappingActors, const TArray<AActor*>& ActorsToIgnore, float Radius, const FVector& SphereOrigin);
 	/**
