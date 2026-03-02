@@ -81,6 +81,7 @@ public:
 	FGameplayTag Abilities_Attack; //攻击技能激活标签
 	
 	FGameplayTag Abilities_Fire_FireBolt; //火球术技能标签
+	FGameplayTag Abilities_Fire_FireBlast; //火炎爆发技能标签
 	FGameplayTag Abilities_Lightning_Electrocute; //雷击技能标签
 	FGameplayTag Abilities_Arcane_ArcaneShards; //奥数爆发技能标签
 
