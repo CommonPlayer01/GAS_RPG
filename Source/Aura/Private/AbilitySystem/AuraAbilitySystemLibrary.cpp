@@ -538,4 +538,19 @@ TArray<FVector> UAuraAbilitySystemLibrary::EvenlyRotatedVectors(const FVector& F
 	return Vectors;
 }
 
+void UAuraAbilitySystemLibrary::SetIsRadialDamageEffectParams(FDamageEffectParams& DamageEffectParams, bool bIsRadial,
+	float InnerRadius, float OutRadius, FVector Origin)
+{
+	DamageEffectParams.bIsRadialDamage = bIsRadial;
+	DamageEffectParams.RadialDamageInnerRadius = InnerRadius;
+	DamageEffectParams.RadialDamageOuterRadius = OutRadius;
+	DamageEffectParams.RadialDamageOrigin = Origin;
+}
+
+void UAuraAbilitySystemLibrary::SetEffectParamsTargetASC(FDamageEffectParams& DamageEffectParams,
+	UAbilitySystemComponent* InASC)
+{
+	DamageEffectParams.TargetAbilitySystemComponent = InASC;
+}
+
 

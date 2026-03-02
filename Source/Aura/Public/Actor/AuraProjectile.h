@@ -36,25 +36,30 @@ protected:
 	virtual void BeginPlay() override;
 	virtual void Destroyed() override;
 
+	UFUNCTION(BlueprintCallable)
+	void OnHit() const;
 
 	UFUNCTION()
 	virtual void OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
-	
-private:
+
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<USphereComponent> Sphere;
 
+	bool IsValidOverlap(AActor* OtherActor);
+
+	bool bHit;
+private:
+
+	//此物体的存在时间
+	UPROPERTY(EditDefaultsOnly)
+	float LifeSpan = 15.f;
+	
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<UNiagaraSystem> ImpactEffect;
 
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<USoundBase> ImpactSound;
-
-	UFUNCTION(BlueprintCallable)
-	void OnHit() const;
 	
-	bool bHit;
-
 	//移动循环音效
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<USoundBase> LoopingSound;
@@ -64,8 +69,6 @@ private:
 	TObjectPtr<UAudioComponent> LoopingSoundComponent;
 
 
-	//此物体的存在时间
-	UPROPERTY(EditDefaultsOnly)
-	float LifeSpan = 15.f;
+
 
 };

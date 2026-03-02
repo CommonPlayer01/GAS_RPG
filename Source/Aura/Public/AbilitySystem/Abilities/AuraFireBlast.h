@@ -6,6 +6,7 @@
 #include "AbilitySystem/Abilities/AuraDamageGameplayAbility.h"
 #include "AuraFireBlast.generated.h"
 
+class AAuraFireBall;
 /**
  * 
  */

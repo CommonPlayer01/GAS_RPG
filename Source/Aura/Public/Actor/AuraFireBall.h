@@ -22,10 +22,15 @@ public:
 	UPROPERTY(BlueprintReadOnly) //当前火球返回的目标角色，默认是技能的释放者，在创建火球是创建
 	TObjectPtr<AActor> ReturnToActor;
 
+	UPROPERTY(BlueprintReadWrite)
+	FDamageEffectParams ExplosionDamageParams;
+
 protected:
 	
 	
 	virtual void BeginPlay() override;
 
 	virtual void OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) override;
+
+
 };

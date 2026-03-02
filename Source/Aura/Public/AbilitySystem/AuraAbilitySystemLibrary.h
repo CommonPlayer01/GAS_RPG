@@ -7,6 +7,7 @@
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "AuraAbilitySystemLibrary.generated.h"
 
+struct FDamageEffectParams;
 class UAbilityInfo;
 struct FWidgetControllerParams;
 class UAttributeMenuWidgetController;
@@ -264,5 +265,40 @@ public:
 	 */
 	UFUNCTION(BlueprintPure, Category="RPGAbilitySystemLibrary|GameplayMechanics")
 	static TArray<FVector> EvenlyRotatedVectors(const FVector& Forward, const FVector & Axis, float Spread, int32 NumVectors);
+
+	/**
+	 * 修改伤害配置项，将其设置为具有范围伤害的配置项
+	 * @param DamageEffectParams 需要修改的配置项
+	 * @param bIsRadial 设置是否为范围伤害
+	 * @param InnerRadius 内半径
+	 * @param OutRadius 外半径
+	 * @param Origin 伤害中心
+	 */
+	UFUNCTION(BlueprintCallable, Category="RPGAbilitySystemLibrary|GameplayEffects")
+	static void SetIsRadialDamageEffectParams(UPARAM(ref) FDamageEffectParams& DamageEffectParams, bool bIsRadial, float InnerRadius, float OutRadius, FVector Origin);
+
+	// /**
+	//  * 修改伤害的冲击力的方向
+	//  * @param DamageEffectParams 需要修改的伤害配置项
+	//  * @param KnockbackDirection 攻击时触发击退的方向
+	//  */
+	// UFUNCTION(BlueprintCallable, Category="RPGAbilitySystemLibrary|GameplayEffects")
+	// static void SetKnockbackDirection(UPARAM(ref) FDamageEffectParams& DamageEffectParams, FVector KnockbackDirection, float Magnitude = 0.f);
+	//
+	// /**
+	//  * 修改伤害的冲击力的方向
+	//  * @param DamageEffectParams 需要修改的伤害配置项
+	//  * @param ImpulseDirection 死亡时触发击退的方向
+	//  */
+	// UFUNCTION(BlueprintCallable, Category="RPGAbilitySystemLibrary|GameplayEffects")
+	// static void SetDeathImpulseDirection(UPARAM(ref) FDamageEffectParams& DamageEffectParams, FVector ImpulseDirection, float Magnitude = 0.f);
+
+	/**
+	 * 设置伤害配置应用目标ASC
+	 * @param DamageEffectParams 需要修改的伤害配置 
+	 * @param InASC 应用目标ASC
+	 */
+	UFUNCTION(BlueprintCallable, Category="RPGAbilitySystemLibrary|GameplayEffects")
+	static void SetEffectParamsTargetASC(UPARAM(ref) FDamageEffectParams& DamageEffectParams, UAbilitySystemComponent* InASC);
 
 };

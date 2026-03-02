@@ -70,12 +70,8 @@ void AAuraProjectile::OnSphereOverlap(
 	bool bFromSweep,
 	const FHitResult& SweepResult)
 {
+	if (!IsValidOverlap(OtherActor)) return;
 
-	if (DamageEffectParams.SourceAbilitySystemComponent == nullptr) return;
-  	AActor* SourceAvatarActor = DamageEffectParams.SourceAbilitySystemComponent->GetAvatarActor();
-	if (SourceAvatarActor == OtherActor) return;
-	
-	if (!UAuraAbilitySystemLibrary::IsNotFriend(SourceAvatarActor, OtherActor)) return;
 	if (!bHit) OnHit();
 	//在重叠后，销毁自身
 	if(HasAuthority())
@@ -94,6 +90,16 @@ void AAuraProjectile::OnSphereOverlap(
 		//如果对actor没有权威性，将bHit设置为true，证明当前已经播放了击中特效
 		bHit = true;
 	}
+}
+
+bool AAuraProjectile::IsValidOverlap(AActor* OtherActor)
+{
+	if (DamageEffectParams.SourceAbilitySystemComponent == nullptr) return false;
+	AActor* SourceAvatarActor = DamageEffectParams.SourceAbilitySystemComponent->GetAvatarActor();
+	if (SourceAvatarActor == OtherActor) return false;
+	
+	if (!UAuraAbilitySystemLibrary::IsNotFriend(SourceAvatarActor, OtherActor)) return false;
+	return true;
 }
 
 void AAuraProjectile::OnHit() const
