@@ -13,6 +13,7 @@
 #include "NiagaraFunctionLibrary.h"
 #include "AbilitySystem/AuraAbilitySystemComponent.h"
 #include "Actor/MagicCircle.h"
+#include "Aura/Aura.h"
 #include "Components/DecalComponent.h"
 #include "Components/SplineComponent.h"
 #include "GameFramework/Character.h"
@@ -184,8 +185,8 @@ void AAuraPlayerController::CursorTrace()
 		return;
 	}
 
-
-	GetHitResultUnderCursor(ECC_Visibility, false, CursorHit); //获取可视的鼠标命中结果
+	const ECollisionChannel TraceChannel = IsValid(MagicCircle) ? ECC_EXCLUDEPLAYERS_CHANNEL : ECC_Visibility;
+	GetHitResultUnderCursor(TraceChannel, false, CursorHit); //获取可视的鼠标命中结果
 	if(!CursorHit.bBlockingHit) return; //如果未命中直接返回
 
 	LastActor = ThisActor;
