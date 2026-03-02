@@ -121,6 +121,9 @@ public:
 	FGameplayTag Player_Block_CursorTrace; //阻挡鼠标拾取事件
 
 	TArray<FGameplayTag> DamageTypes;
+	
+	FGameplayTag GameplayCue_FireBlast; //火焰爆炸火球爆炸时的表现效果
+
 
 private:
 	static FAuraGameplayTags GameplayTags;

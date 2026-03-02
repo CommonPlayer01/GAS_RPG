@@ -472,6 +472,13 @@ void FAuraGameplayTags::InitializeInputGameplayTags()
 			FString("阻挡鼠标拾取事件")
 			);
 
-
-
+	
+	/*
+	 * Gameplaycue
+	*/
+	GameplayTags.GameplayCue_FireBlast = UGameplayTagsManager::Get()
+	.AddNativeGameplayTag(
+		FName("GameplayCue.FireBlast"),
+		FString("火焰爆炸表现效果标签")
+		);
 }

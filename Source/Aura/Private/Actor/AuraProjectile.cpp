@@ -102,7 +102,7 @@ bool AAuraProjectile::IsValidOverlap(AActor* OtherActor)
 	return true;
 }
 
-void AAuraProjectile::OnHit() const
+void AAuraProjectile::OnHit()
 {
 	//播放声效
 	UGameplayStatics::PlaySoundAtLocation(this, ImpactSound, GetActorLocation(), FRotator::ZeroRotator);
@@ -114,7 +114,5 @@ void AAuraProjectile::OnHit() const
 		LoopingSoundComponent->Stop();
 		LoopingSoundComponent->DestroyComponent();
 	}
-
-
 }
 
