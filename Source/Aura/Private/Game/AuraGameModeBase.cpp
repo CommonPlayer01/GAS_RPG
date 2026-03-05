@@ -23,6 +23,7 @@ void AAuraGameModeBase::SaveSlotData(const UMVVM_LoadSlot* LoadSlot, int32 SlotI
 
 	//设置需要保存的数据
 	LoadScreenSaveGame->PlayerName = LoadSlot->GetPlayerName();
+	LoadScreenSaveGame->MapName = LoadSlot->GetMapName();
 	LoadScreenSaveGame->SlotName = LoadSlot->GetSlotName();
 	LoadScreenSaveGame->SlotIndex = SlotIndex;
 	LoadScreenSaveGame->SaveSlotStatus = Taken;
@@ -61,4 +62,19 @@ void AAuraGameModeBase::DeleteSlotData(const FString& SlotName, int32 SlotIndex)
 		//删除已保存的存档
 		UGameplayStatics::DeleteGameInSlot(SlotName, SlotIndex);
 	}
+}
+
+void AAuraGameModeBase::TravelToMap(const UMVVM_LoadSlot* Slot)
+{
+	const FString SlotName = Slot->GetSlotName();
+	const int32 SlotIndex = Slot->SlotIndex;
+	
+	//打开地图
+	UGameplayStatics::OpenLevelBySoftObjectPtr(Slot, Maps.FindChecked(Slot->GetMapName()));
+}
+
+void AAuraGameModeBase::BeginPlay()
+{
+	Super::BeginPlay();
+	Maps.Add(DefaultMapName, DefaultMap);
 }

@@ -4,7 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "MVVMViewModelBase.h"
+#include "AI/BTService_FindNearestPlayer.h"
 #include "Game/LoadScreenSaveGame.h"
+#include "UObject/ObjectMacros.h"
 #include "MVVM_LoadSlot.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FSetWidgetSwitcherIndex, int32, WidgetSwitecherIndex);
@@ -42,6 +44,9 @@ public:
 
 	void SetPlayerName(const FString& InPlayerName);
 	FString GetPlayerName() const { return PlayerName; };
+
+	void SetMapName(const FString& InMapName);
+	FString GetMapName() const { return MapName;}
 	
 private:
 	
@@ -52,4 +57,7 @@ private:
 	//用户设置的角色名称
 	UPROPERTY(BlueprintReadOnly, FieldNotify, Setter, Getter, meta=(AllowPrivateAccess))
 	FString PlayerName;
+
+	UPROPERTY(BlueprintReadOnly, FieldNotify, Setter, Getter, meta=(AllowPrivateAccess))
+	FString MapName;
 };

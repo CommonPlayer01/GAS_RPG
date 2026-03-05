@@ -50,9 +50,26 @@ public:
 	 */
 	static void DeleteSlotData(const FString& SlotName, int32 SlotIndex);
 
-
 	//存档使用的数据结构
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<USaveGame> LoadScreenSaveGameClass;
+
+	//初始地图名称
+	UPROPERTY(EditDefaultsOnly)
+	FString DefaultMapName;
+
+	//游戏初始地图
+	UPROPERTY(EditDefaultsOnly)
+	TSoftObjectPtr<UWorld> DefaultMap;
+
+	//地图名称和地图的映射
+	UPROPERTY(EditDefaultsOnly)
+	TMap<FString, TSoftObjectPtr<UWorld>> Maps;
+
+	void TravelToMap(const UMVVM_LoadSlot* Slot);
+
+	
+protected:
+	virtual void BeginPlay() override;
 
 };

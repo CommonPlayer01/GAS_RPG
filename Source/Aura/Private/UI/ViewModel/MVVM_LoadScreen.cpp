@@ -41,6 +41,7 @@ UMVVM_LoadSlot* UMVVM_LoadScreen::GetLoadSlotViewModelByIndex(const int32 Index)
 void UMVVM_LoadScreen::NewSlotButtonPressed(int32 Slot, const FString& EnterName)
 {
 	AAuraGameModeBase* AuraGameMode = Cast<AAuraGameModeBase>(UGameplayStatics::GetGameMode(this));
+	LoadSlots[Slot]->SetMapName(AuraGameMode->DefaultMapName);
 	LoadSlots[Slot]->SetPlayerName(EnterName); //修改MVVM上存储的角色名称
 	LoadSlots[Slot]->LoadSlotStatus = Taken; //修改进入界面为加载界面
 	AuraGameMode->SaveSlotData(LoadSlots[Slot], Slot); //保存数据
@@ -79,6 +80,12 @@ void UMVVM_LoadScreen::DeleteButtonPressed(const int32 Slot)
 	LoadSlots[Slot]->EnableSelectSlotButton.Broadcast(true);
 }
 
+void UMVVM_LoadScreen::EnterGameButtonPressed(int32 Slot)
+{
+	AAuraGameModeBase* AuraGameMode = Cast<AAuraGameModeBase>(UGameplayStatics::GetGameMode(this));
+	AuraGameMode->TravelToMap(LoadSlots[Slot]);
+}
+
 
 void UMVVM_LoadScreen::LoadData()
 {
@@ -96,7 +103,9 @@ void UMVVM_LoadScreen::LoadData()
 
 		//设置存档视图模型数据
 		Slot.Value->SetPlayerName(PlayerName);
+		Slot.Value->SetMapName(SaveGame->MapName);
 		Slot.Value->LoadSlotStatus = SaveSlotStatus;
+		Slot.Value->SetMapName(SaveGame->MapName);
 
 		//调用视图模型初始化
 		Slot.Value->InitializeSlot();
