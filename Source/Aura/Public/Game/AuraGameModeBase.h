@@ -43,6 +43,14 @@ public:
 	 */
 	ULoadScreenSaveGame* GetSaveSlotData(const FString& SlotName, int32 SlotIndex) const;
 
+	/**
+	 * 删除存档
+	 * @param SlotName 需要删除存档对应的视图模型实例名称
+	 * @param SlotIndex 存档索引
+	 */
+	static void DeleteSlotData(const FString& SlotName, int32 SlotIndex);
+
+
 	//存档使用的数据结构
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<USaveGame> LoadScreenSaveGameClass;

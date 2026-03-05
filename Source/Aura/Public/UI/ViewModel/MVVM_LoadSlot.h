@@ -42,6 +42,7 @@ public:
 
 	void SetPlayerName(const FString& InPlayerName);
 	FString GetPlayerName() const { return PlayerName; };
+	
 private:
 	
 	//用户控件的名称

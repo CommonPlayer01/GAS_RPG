@@ -19,12 +19,15 @@ void UMVVM_LoadScreen::InitializeLoadSlots()
 {
 	LoadSlot_0 = NewObject<UMVVM_LoadSlot>(this, LoadSlotViewModelClass);
 	LoadSlot_0->SetSlotName("LoadSlot_0");
+	LoadSlot_0->SlotIndex = 0;
 	LoadSlots.Add(0, LoadSlot_0);
 	LoadSlot_1 = NewObject<UMVVM_LoadSlot>(this, LoadSlotViewModelClass);
 	LoadSlot_1->SetSlotName("LoadSlot_1");
+	LoadSlot_1->SlotIndex = 1;
 	LoadSlots.Add(1, LoadSlot_1);
 	LoadSlot_2 = NewObject<UMVVM_LoadSlot>(this, LoadSlotViewModelClass);
 	LoadSlot_2->SetSlotName("LoadSlot_2");
+	LoadSlot_2->SlotIndex = 2;
 	LoadSlots.Add(2, LoadSlot_2);
 
 }
@@ -51,7 +54,7 @@ void UMVVM_LoadScreen::NewGameButtonPressed(int32 Slot)
 
 void UMVVM_LoadScreen::SelectSlotButtonPressed(int32 Slot)
 {
-	SlotSelected.Broadcast();
+	SlotSelected.Broadcast(Slot);
 	for(const TTuple<int32, UMVVM_LoadSlot*> LoadSlot : LoadSlots)
 	{
 		if (LoadSlot.Key == Slot)
@@ -63,6 +66,19 @@ void UMVVM_LoadScreen::SelectSlotButtonPressed(int32 Slot)
 		}
 	}
 }
+
+void UMVVM_LoadScreen::DeleteButtonPressed(const int32 Slot)
+{
+	//删除存档
+	const AAuraGameModeBase* AuraGameMode = Cast<AAuraGameModeBase>(UGameplayStatics::GetGameMode(this));
+	AuraGameMode->DeleteSlotData(LoadSlots[Slot]->GetSlotName(), Slot);
+
+	//修改用户控件显示
+	LoadSlots[Slot]->LoadSlotStatus = Vacant; //修改为创建存档
+	LoadSlots[Slot]->InitializeSlot(); //修改存档显示
+	LoadSlots[Slot]->EnableSelectSlotButton.Broadcast(true);
+}
+
 
 void UMVVM_LoadScreen::LoadData()
 {
