@@ -62,11 +62,16 @@ public:
 	UPROPERTY(EditDefaultsOnly)
 	TSoftObjectPtr<UWorld> DefaultMap;
 
+	UPROPERTY(EditDefaultsOnly)
+	FName DefaultPlayerStartTag;
+
 	//地图名称和地图的映射
 	UPROPERTY(EditDefaultsOnly)
 	TMap<FString, TSoftObjectPtr<UWorld>> Maps;
 
 	void TravelToMap(const UMVVM_LoadSlot* Slot);
+
+	virtual AActor* ChoosePlayerStart_Implementation(AController* Player) override;
 
 	
 protected:
