@@ -9,6 +9,7 @@
 #include "AbilitySystem/AuraAbilitySystemComponent.h"
 #include "AbilitySystem/AuraAbilitySystemLibrary.h"
 #include "AbilitySystem/AuraAttributeSet.h"
+#include "AbilitySystem/Data/AbilityInfo.h"
 #include "AbilitySystem/Data/LevelUpInfo.h"
 #include "AbilitySystem/Debuff/DebuffNiagaraComponent.h"
 #include "Camera/CameraComponent.h"
@@ -59,7 +60,11 @@ void AAuraCharacter::PossessedBy(AController* NewController)
 	InitAbilityActorInfo();
 
 	LoadProgress();
-	AddCharacterAbilities();
+	if (AAuraGameModeBase* AuraGameMode = Cast<AAuraGameModeBase>(UGameplayStatics::GetGameMode(this)))
+	{
+		AuraGameMode->LoadWorldState(GetWorld());
+	}
+	// AddCharacterAbilities();
 
 	//设置OwnerActor的Controller
 	SetOwner(NewController);
@@ -194,6 +199,36 @@ void AAuraCharacter::SaveProgress_Implementation(const FName& CheckpointTag)
 		SaveGameData->Vigor = UAuraAttributeSet::GetVigorAttribute().GetNumericValue(GetAttributeSet());
 
 		SaveGameData->bFirstTimeLoadIn = false; //保存完成将第一次加载属性设置为false
+
+		if(!HasAuthority()) return;
+
+		UAuraAbilitySystemComponent* AuraASC = Cast<UAuraAbilitySystemComponent>(AbilitySystemComponent);
+		SaveGameData->SavedAbilities.Empty(); //清空数组
+
+		//使用ASC里创建的ForEach函数循环获取角色的技能，并生成技能结构体保存
+		FForEachAbility SaveAbilityDelegate;
+		SaveAbilityDelegate.BindLambda([this, AuraASC, SaveGameData](const FGameplayAbilitySpec& AbilitySpec)
+		{
+			//获取技能标签和
+			const FGameplayTag AbilityTag = UAuraAbilitySystemComponent::GetAbilityTagFromSpec(AbilitySpec);
+			UAbilityInfo* AbilityInfo = UAuraAbilitySystemLibrary::GetAbilityInfo(this);
+			FAuraAbilityInfo Info = AbilityInfo->FindAbilityInfoForTag(AbilityTag);
+
+			//创建技能结构体
+			FSavedAbility SavedAbility;
+			SavedAbility.GameplayAbility = Info.Ability;
+			SavedAbility.AbilityLevel = AbilitySpec.Level;
+			SavedAbility.AbilityTag = AbilityTag;
+			SavedAbility.AbilityStatus = AuraASC->GetStatusTagFromAbilityTag(AbilityTag);
+			SavedAbility.AbilityInputTag = AuraASC->GetSlotTagFromAbilityTag(AbilityTag);
+			SavedAbility.AbilityType = Info.AbilityType;
+
+			SaveGameData->SavedAbilities.AddUnique(SavedAbility);
+		});
+		//调用ForEach技能来执行存储到存档
+		AuraASC->ForEachAbility(SaveAbilityDelegate);
+
+		
 		//保存存档
 		AuraGameModeBase->SaveInGameProgressData(SaveGameData);
 
@@ -268,6 +303,10 @@ void AAuraCharacter::LoadProgress() const
 		}
 		else
 		{
+			if (UAuraAbilitySystemComponent* AuraASC = Cast<UAuraAbilitySystemComponent>(AbilitySystemComponent))
+			{
+				AuraASC->AddCharacterAbilitiesFromSaveData(SaveGameData);
+			}
 			//修改玩家相关
 			if(AAuraPlayerState* AuraPlayerState = Cast<AAuraPlayerState>(GetPlayerState()))
 			{

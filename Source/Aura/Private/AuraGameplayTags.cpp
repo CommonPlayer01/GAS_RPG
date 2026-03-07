@@ -395,6 +395,11 @@ void FAuraGameplayTags::InitializeInputGameplayTags()
 	/*
 	 * 被动技能
 	*/
+	GameplayTags.Abilities_Passive_ListenForEvent = UGameplayTagsManager::Get()
+	.AddNativeGameplayTag(
+		FName("Abilities.Passive.ListenForEvent"),
+		FString("监听事件")
+		);
 	GameplayTags.Abilities_Passive_HaloOfProtection = UGameplayTagsManager::Get()
 		.AddNativeGameplayTag(
 			FName("Abilities.Passive.HaloOfProtection"),

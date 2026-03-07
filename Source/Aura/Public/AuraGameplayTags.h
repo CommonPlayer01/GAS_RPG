@@ -85,6 +85,7 @@ public:
 	FGameplayTag Abilities_Lightning_Electrocute; //雷击技能标签
 	FGameplayTag Abilities_Arcane_ArcaneShards; //奥数爆发技能标签
 
+	FGameplayTag Abilities_Passive_ListenForEvent; //被动技能-监听事件
 	FGameplayTag Abilities_Passive_HaloOfProtection; //被动技能-守护光环
 	FGameplayTag Abilities_Passive_LifeSiphon; //被动技能-生命回复
 	FGameplayTag Abilities_Passive_ManaSiphon; //被动技能-蓝量回复

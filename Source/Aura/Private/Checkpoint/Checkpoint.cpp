@@ -4,7 +4,9 @@
 #include "Checkpoint/Checkpoint.h"
 
 #include "Components/SphereComponent.h"
+#include "Game/AuraGameModeBase.h"
 #include "Interaction/PlayerInterface.h"
+#include "Kismet/GameplayStatics.h"
 
 ACheckpoint::ACheckpoint(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
@@ -26,6 +28,14 @@ ACheckpoint::ACheckpoint(const FObjectInitializer& ObjectInitializer) : Super(Ob
 }
 
 
+void ACheckpoint::LoadActor_Implementation()
+{
+	if(bReached)
+	{
+		HandleGlowEffects();
+	}
+}
+
 void ACheckpoint::BeginPlay()
 {
 	Super::BeginPlay();
@@ -39,9 +49,16 @@ void ACheckpoint::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AAct
 	//if(OtherActor->ActorHasTag("Player")) //如果只需要判断是不是玩家角色通过标签判断即可
 	if(OtherActor->Implements<UPlayerInterface>())
 	{
+		bReached = true;
+
+		if (AAuraGameModeBase* AuraGM = Cast<AAuraGameModeBase>(UGameplayStatics::GetGameMode(this)))
+		{
+			AuraGM->SaveWorldState(GetWorld());
+		}
+		
 		// //修改存档当的检测点
 		IPlayerInterface::Execute_SaveProgress(OtherActor, PlayerStartTag);
-		
+
 		//如果与碰撞体重叠的是
 		HandleGlowEffects();
 	}

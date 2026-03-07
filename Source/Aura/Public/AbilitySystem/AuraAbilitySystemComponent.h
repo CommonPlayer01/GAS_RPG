@@ -5,7 +5,8 @@
 #include "CoreMinimal.h"
 #include "AbilitySystemComponent.h"
 #include "AuraAbilitySystemComponent.generated.h"
- 
+
+class ULoadScreenSaveGame;
 DECLARE_MULTICAST_DELEGATE_OneParam(FEffectAssetTags, const FGameplayTagContainer& /* AssetTags */)
 DECLARE_MULTICAST_DELEGATE(FAbilityGiven) //技能初始化应用后的回调委托
 DECLARE_DELEGATE_OneParam(FForEachAbility, const FGameplayAbilitySpec&); //单播委托，只能绑定一个回调
@@ -34,7 +35,8 @@ public:
 	FActivePassiveEffect ActivatePassiveEffect; //被动技能对应特效委托
 
 	bool bStartupAbilitiesGiven = false; //初始化应用技能后，此值将被设置为true，用于记录当前是否被初始化完成
-	
+
+	void AddCharacterAbilitiesFromSaveData(ULoadScreenSaveGame* SaveData);
 	void AddCharacterAbilities(const TArray<TSubclassOf<UGameplayAbility>>& StartupAbilities);
 	void AddCharacterPassiveAbilities(const TArray<TSubclassOf<UGameplayAbility>>& StartupPassiveAbilities); //应用被动技能
 
