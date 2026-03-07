@@ -29,6 +29,7 @@ struct FUIWidgetRow : public FTableRowBase
 };
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAttributeChangedSignature, float, NewAttribute);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnLevelChangedSignature, int32, NewLevel, bool, bLevelUp);
 // DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnHealthChangedSignature, float, NewHealth);
 // DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnMaxHealthChangedSignature,float, NewMaxHealth);
 // DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnManaChangedSignature,float, NewMana);
@@ -64,14 +65,12 @@ public:
 	
 	UPROPERTY(BlueprintAssignable, Category="GAS|Attributes")
 	FMessageWidgetRowSignature MessageWidgetRowDelegate;
-
-
-
+	
 	UPROPERTY(BlueprintAssignable, Category="GAS|XP")
 	FOnAttributeChangedSignature OnXPPercentChangedDelegate; //经验条百分比变动回调
 
 	UPROPERTY(BlueprintAssignable, Category="GAS|Level")
-	FOnPlayerStateChangedSignature OnPlayerLevelChangeDelegate; //等级变动回调
+	FOnLevelChangedSignature OnPlayerLevelChangeDelegate; //等级变动回调
 
 
 

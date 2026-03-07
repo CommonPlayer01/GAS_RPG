@@ -38,6 +38,9 @@ public:
 	//当前进入加载存档界面时，此存档应该显示的用户控件界面。
 	UPROPERTY()
 	TEnumAsByte<ESaveSlotStatus> LoadSlotStatus;
+
+	UPROPERTY()
+	FName PlayerStartTag;
 	
 	void SetSlotName(const FString& InSlotName);
 	FString GetSlotName() const { return SlotName; };
@@ -47,6 +50,10 @@ public:
 
 	void SetMapName(const FString& InMapName);
 	FString GetMapName() const { return MapName;}
+
+	void SetPlayerLevel(const int32 InPlayerLevel);
+	int32 GetPlayerLevel() const { return PlayerLevel; };
+
 	
 private:
 	
@@ -60,4 +67,9 @@ private:
 
 	UPROPERTY(BlueprintReadOnly, FieldNotify, Setter, Getter, meta=(AllowPrivateAccess))
 	FString MapName;
+
+	//角色的等级
+	UPROPERTY(BlueprintReadOnly, FieldNotify, Setter, Getter, meta=(AllowPrivateAccess)) //meta=(AllowPrivateAccess)允许设置私有，但在蓝图公开
+	int32 PlayerLevel;
+
 };

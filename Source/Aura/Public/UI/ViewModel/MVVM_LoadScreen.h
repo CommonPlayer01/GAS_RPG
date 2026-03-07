@@ -48,7 +48,7 @@ public:
 	void DeleteButtonPressed(int32 Slot);
 
 	UFUNCTION(BlueprintCallable)
-	void EnterGameButtonPressed(int32 Slot);
+	void PlayButtonPressed(int32 Slot);
 	
 	void LoadData();
 

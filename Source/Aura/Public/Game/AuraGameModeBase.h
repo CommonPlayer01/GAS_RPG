@@ -50,6 +50,17 @@ public:
 	 */
 	static void DeleteSlotData(const FString& SlotName, int32 SlotIndex);
 
+
+	//获取到当前游戏进行中所使用的存档数据
+	ULoadScreenSaveGame* RetrieveInGameSaveData() const;
+
+	/**
+	 * 保存游戏中的进度
+	 * @param SaveObject 需要保存的数据
+	 */
+	void SaveInGameProgressData(ULoadScreenSaveGame* SaveObject) const;
+
+
 	//存档使用的数据结构
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<USaveGame> LoadScreenSaveGameClass;

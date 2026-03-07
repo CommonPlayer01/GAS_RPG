@@ -30,9 +30,9 @@ void UOverlayWidgetController::BindCallbacksToDependencies()
 	//绑定等级相关回调
 	GetAuraPS()->OnXPChangedDelegate.AddUObject(this, &ThisClass::OnXPChanged);
 	//绑定等级相关回调
-	GetAuraPS()->OnLevelChangedDelegate.AddLambda([this](int32 NewLevel)
+	GetAuraPS()->OnLevelChangedDelegate.AddLambda([this](int32 NewLevel, bool bLevelUp)
 	{
-		OnPlayerLevelChangeDelegate.Broadcast(NewLevel);
+		OnPlayerLevelChangeDelegate.Broadcast(NewLevel, bLevelUp);
 	});
 
 	

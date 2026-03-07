@@ -12,6 +12,7 @@ class UAbilitySystemComponent;
 class UAttributeSet;
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnPlayerStateChanged, int32);
+DECLARE_MULTICAST_DELEGATE_TwoParams(FOnLevelChanged, int32, bool);
 
 
 /**
@@ -32,7 +33,7 @@ public:
 	TObjectPtr<ULevelUpInfo> LevelUpInfo; //设置升级相关数据
 
 	FOnPlayerStateChanged OnXPChangedDelegate; //经验值变动委托
-	FOnPlayerStateChanged OnLevelChangedDelegate; //等级变动委托
+	FOnLevelChanged OnLevelChangedDelegate; //等级变动委托
 	FOnPlayerStateChanged OnAttributePointsChangedDelegate; //属性点数变动委托
 	FOnPlayerStateChanged OnSpellPointsChangedDelegate; //技能点数变动委托
 

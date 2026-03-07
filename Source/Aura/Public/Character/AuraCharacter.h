@@ -36,7 +36,7 @@ public:
 	virtual void AddToSpellPoints_Implementation(int32 InSpellPoints) override;
 	virtual void ShowMagicCircle_Implementation(UMaterialInterface* DecalMaterial = nullptr) override;
 	virtual void HideMagicCircle_Implementation() override;
-
+	virtual void SaveProgress_Implementation(const FName& CheckpointTag) override;
 	/* Player Interface*/
 
 	
@@ -54,7 +54,9 @@ public:
 
 	virtual void StunTagChanged(const FGameplayTag CallbackTag, int32 NewCount) override;
 
-	
+	//角色加载存档保存的数值
+	void LoadProgress() const;
+
 private:
 	virtual void InitAbilityActorInfo() override;
 

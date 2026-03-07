@@ -8,7 +8,9 @@
 #include "AuraGameplayTags.h"
 #include "AbilitySystem/Data/CharacterClassInfo.h"
 #include "Game/AuraGameModeBase.h"
+#include "Game/LoadScreenSaveGame.h"
 #include "Interaction/CombatInterface.h"
+#include "Interaction/PlayerInterface.h"
 #include "Kismet/GameplayStatics.h"
 #include "Player/AuraPlayerState.h"
 #include "UI/HUD/AuraHUD.h"
@@ -97,6 +99,53 @@ void UAuraAbilitySystemLibrary::InitializeDefaultAttributes(const UObject* World
 	const FGameplayEffectSpecHandle VitalSpecHandle = ASC->MakeOutgoingSpec(CharacterClassInfo->VitalAttributes, Level, VitalContextHandle);
 	ASC->ApplyGameplayEffectSpecToSelf(*VitalSpecHandle.Data.Get());
 
+}
+
+void UAuraAbilitySystemLibrary::InitializeDefaultAttributesFromSaveData(const UObject* WorldContextObject,
+	UAbilitySystemComponent* ASC, ULoadScreenSaveGame* SaveGame)
+{
+	AActor* AvatarActor = ASC->GetAvatarActor();
+	
+	const FAuraGameplayTags& GameplayTags = FAuraGameplayTags::Get();
+
+	//从实例获取到关卡角色的配置
+	const UCharacterClassInfo* CharacterClassInfo = GetCharacterClassInfo(WorldContextObject);
+	if(CharacterClassInfo == nullptr) return;
+
+	//*********************************初始化主要属性*********************************
+
+	//创建GE的上下文句柄
+	FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
+	EffectContextHandle.AddSourceObject(AvatarActor);
+
+	//根据句柄和类创建GE实例，并可以通过句柄找到GE实例
+	const FGameplayEffectSpecHandle PrimaryContextHandle = ASC->MakeOutgoingSpec(CharacterClassInfo->PrimaryAttributes_SetByCaller, 1.0f, EffectContextHandle);
+
+	//通过标签设置GE使用的配置
+	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(PrimaryContextHandle, GameplayTags.Attributes_Primary_Strength, SaveGame->Strength);
+	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(PrimaryContextHandle, GameplayTags.Attributes_Primary_Intelligence, SaveGame->Intelligence);
+	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(PrimaryContextHandle, GameplayTags.Attributes_Primary_Resilience, SaveGame->Resilience);
+	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(PrimaryContextHandle, GameplayTags.Attributes_Primary_Vigor, SaveGame->Vigor);
+
+	//应用GE
+	ASC->ApplyGameplayEffectSpecToSelf(*PrimaryContextHandle.Data.Get());
+
+	if(AvatarActor->Implements<UPlayerInterface>())
+	{
+		//*********************************设置次级属性*********************************
+	
+		FGameplayEffectContextHandle SecondaryContextHandle = ASC->MakeEffectContext();
+		SecondaryContextHandle.AddSourceObject(AvatarActor);
+		const FGameplayEffectSpecHandle SecondarySpecHandle = ASC->MakeOutgoingSpec(CharacterClassInfo->SecondaryAttributes_Infinite, 1.0f, SecondaryContextHandle);
+		ASC->ApplyGameplayEffectSpecToSelf(*SecondarySpecHandle.Data.Get());
+
+		//*********************************填充血量和蓝量*********************************
+
+		FGameplayEffectContextHandle VitalContextHandle = ASC->MakeEffectContext();
+		VitalContextHandle.AddSourceObject(AvatarActor);
+		const FGameplayEffectSpecHandle VitalSpecHandle = ASC->MakeOutgoingSpec(CharacterClassInfo->VitalAttributes, 1.0f, VitalContextHandle);
+		ASC->ApplyGameplayEffectSpecToSelf(*VitalSpecHandle.Data.Get());
+	}
 }
 
 void UAuraAbilitySystemLibrary::GiveStartupAbilities(const UObject* WorldContextObject, UAbilitySystemComponent* ASC, ECharacterClass CharacterClass)
