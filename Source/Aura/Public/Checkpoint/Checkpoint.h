@@ -21,7 +21,7 @@ public:
 	//构造函数
 	ACheckpoint(const FObjectInitializer& ObjectInitializer);
 
-	UPROPERTY(BlueprintReadOnly, SaveGame)
+	UPROPERTY(BlueprintReadWrite, SaveGame)
 	bool bReached = false;
 
 	/*   Save Interface   */
@@ -35,7 +35,8 @@ public:
 	void SetMoveToLocation_Implementation(FVector& OutDestination) override;
 	/*   Highlight Interface   */
 	
-
+	UPROPERTY(EditAnywhere)
+	bool bBindOverlapCallback = true;
 protected:
 
 	virtual void BeginPlay() override;
@@ -57,9 +58,10 @@ protected:
 	 * @param DynamicMaterialInstance 传入检查点模型的材质实例
 	 */
 	UFUNCTION(BlueprintImplementableEvent)
-	void CheckpointReached(UMaterialInstanceDynamic* DynamicMaterialInstance);
+	void  CheckpointReached(UMaterialInstanceDynamic* DynamicMaterialInstance);
 
 	//当玩家角色和检测点产生碰撞后，检查点被激活触发此函数
+	UFUNCTION(BlueprintCallable)
 	void HandleGlowEffects();
 
 	//检查点显示的模型

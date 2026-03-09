@@ -54,7 +54,6 @@ public:
 	void SetPlayerLevel(const int32 InPlayerLevel);
 	int32 GetPlayerLevel() const { return PlayerLevel; };
 
-	
 private:
 	
 	//用户控件的名称

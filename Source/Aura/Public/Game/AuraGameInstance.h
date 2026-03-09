@@ -14,12 +14,12 @@ class AURA_API UAuraGameInstance : public UGameInstance
 {
 	GENERATED_BODY()
 public:
-	UPROPERTY()
+	UPROPERTY(EditDefaultsOnly)
 	FName PlayerStartTag = FName();
 
-	UPROPERTY()
+	UPROPERTY(EditDefaultsOnly)
 	FString LoadSlotName = FString();
 
-	UPROPERTY()
+	UPROPERTY(EditDefaultsOnly)
 	int32 LoadSlotIndex = 0;
 };
