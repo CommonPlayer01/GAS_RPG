@@ -8,6 +8,7 @@
 #include "AuraPlayerController.generated.h"
 
 
+class IHighlightInterface;
 class AMagicCircle;
 class UNiagaraSystem;
 class UDamageTextComponent;
@@ -17,8 +18,19 @@ class UAuraInputConfig;
 class UInputMappingContext;
 class UInputAction;
 struct FInputActionValue;
-class IEnemyInterface;
 class UAuraAbilitySystemComponent;
+
+//鼠标拾取目标的状态枚举
+enum class ETargetingStatus : uint8
+{
+	//敌人
+	TargetingEnemy,
+	//鼠标拾取的目标非敌人
+	TargetingNonEnemy,
+	//无
+	NotTargeting
+};
+
 /**
  * 
  */
@@ -62,8 +74,11 @@ private:
 
 	void CursorTrace(); //鼠标位置追踪拾取
 	FHitResult CursorHit;
-	IEnemyInterface* LastActor; //上一帧拾取到的接口指针
-	IEnemyInterface* ThisActor; //这一帧拾取到的接口指针
+	TObjectPtr<AActor> LastActor; //上一帧拾取到的接口指针
+	TObjectPtr<AActor> ThisActor; //这一帧拾取到的接口指针
+
+	static void HighlightActor(AActor* InActor);
+	static void UnHighlightActor(AActor* InActor);
 
 
 	void AbilityInputTagPressed(const FGameplayTag InputTag);
@@ -82,7 +97,7 @@ private:
 	FVector CachedDestination = FVector::ZeroVector; //存储鼠标点击的位置
 	float FollowTime = 0.f; // 用于查看按住了多久
 	bool bAutoRunning = false; //当前是否自动移动
-	bool bTargeting = false; //当前鼠标是否选中敌人
+	ETargetingStatus TargetingStatus = ETargetingStatus::NotTargeting;
 
 	UPROPERTY(EditDefaultsOnly)
 	float ShortPressThreshold = 0.3f; //定义鼠标悬停多长时间内算点击事件

@@ -120,7 +120,6 @@ void UAuraAbilitySystemComponent::AbilityInputTagPressed(const FGameplayTag& Inp
 				TryActivateAbility(AbilitySpec.Handle);
 			}
 			AbilitySpecInputPressed(AbilitySpec);
-			
 		}
 	}	
 }
@@ -143,13 +142,12 @@ void UAuraAbilitySystemComponent::AbilityInputTagHold(const FGameplayTag& InputT
 		// 在 Aura 中，通常用它来关联输入标签（Input Tags）与技能
 		if(AbilitySpec.GetDynamicSpecSourceTags().HasTagExact(InputTag))
 		{
-			
-			// AbilitySpecInputPressed(AbilitySpec);
-			// if(!AbilitySpec.IsActive())
-			// {
-			// 	TryActivateAbility(AbilitySpec.Handle);
-			// }
-			
+			if(!AbilitySpec.IsActive())
+			{
+				TryActivateAbility(AbilitySpec.Handle);
+				InvokeReplicatedEvent(EAbilityGenericReplicatedEvent::InputPressed, AbilitySpec.Handle, ScopedPredictionKey);
+				AbilitySpecInputPressed(AbilitySpec);
+			}
 		}
 	}	
 }
@@ -172,7 +170,6 @@ void UAuraAbilitySystemComponent::AbilityInputTagReleased(const FGameplayTag& In
 			// 常用于结束蓄力、触发释放效果（如射出箭矢、释放火球等）
 			AbilitySpecInputReleased(AbilitySpec);
 			InvokeReplicatedEvent(EAbilityGenericReplicatedEvent::InputReleased, AbilitySpec.Handle, ScopedPredictionKey);
-			
 		}
 	}
 }

@@ -3,7 +3,9 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Aura/Aura.h"
 #include "GameFramework/PlayerStart.h"
+#include "Interaction/HighlightInterface.h"
 #include "Interaction/SaveInterface.h"
 #include "Checkpoint.generated.h"
 
@@ -12,7 +14,7 @@ class USphereComponent;
  * 
  */
 UCLASS()
-class AURA_API ACheckpoint : public APlayerStart, public ISaveInterface
+class AURA_API ACheckpoint : public APlayerStart, public ISaveInterface, public IHighlightInterface
 {
 	GENERATED_BODY()
 public:
@@ -26,6 +28,13 @@ public:
 	virtual bool ShouldLoadTransform_Implementation() override { return false; } //是否需要修改变换，检查点不需要
 	virtual void LoadActor_Implementation() override; //通过存档二进制修改Actor数据后，更新Actor
 	/*   End Save Interface   */
+
+	/*   Highlight Interface   */
+	void HighlightActor_Implementation() override;
+	void UnHighlightActor_Implementation() override;
+	void SetMoveToLocation_Implementation(FVector& OutDestination) override;
+	/*   Highlight Interface   */
+	
 
 protected:
 
@@ -52,14 +61,21 @@ protected:
 
 	//当玩家角色和检测点产生碰撞后，检查点被激活触发此函数
 	void HandleGlowEffects();
-private:
 
 	//检查点显示的模型
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TObjectPtr<UStaticMeshComponent> CheckpointMesh;
 
+	//修改自定义深度
+	UPROPERTY(EditAnywhere)
+	int32 CustomDepthStencilOverride = CUSTOM_DEPTH_TAN;
+
+	//点击检查点, 自动移动到检查点位置的组件
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<USceneComponent> MoveToComponent;
+	
+private:
 	//检查点模型使用的碰撞体
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<USphereComponent> Sphere;
-
 };
