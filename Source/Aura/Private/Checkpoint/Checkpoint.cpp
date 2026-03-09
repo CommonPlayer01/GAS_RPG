@@ -37,10 +37,8 @@ ACheckpoint::ACheckpoint(const FObjectInitializer& ObjectInitializer) : Super(Ob
 
 void ACheckpoint::LoadActor_Implementation()
 {
-	if(bReached)
-	{
+
 		HandleGlowEffects();
-	}
 }
 
 void ACheckpoint::HighlightActor_Implementation()

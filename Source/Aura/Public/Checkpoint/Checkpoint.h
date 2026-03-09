@@ -75,9 +75,9 @@ protected:
 	//点击检查点, 自动移动到检查点位置的组件
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<USceneComponent> MoveToComponent;
-	
-private:
+
 	//检查点模型使用的碰撞体
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<USphereComponent> Sphere;
+
 };

@@ -85,10 +85,11 @@ public:
 	virtual AActor* ChoosePlayerStart_Implementation(AController* Player) override;
 
 	//保存关卡中的状态到当前存档中
-	void SaveWorldState(UWorld* World) const;
+	void SaveWorldState(UWorld* World, const FString& DestinationMapAssetName = FString("")) const;
 	//从存档中加载当前关卡的状态
-	void LoadWorldState(UWorld* World) const;
-
+	void LoadWorldState(UWorld* World, const FString& DestinationMapAssetName = FString("")) const;
+	
+	FString GetMapNameFromMapAssetName(const FString& MapAssetName) const;
 protected:
 	virtual void BeginPlay() override;
 

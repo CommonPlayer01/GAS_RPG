@@ -124,6 +124,9 @@ public:
 	UPROPERTY()
 	FString MapName = FString("Default Map Name");
 
+	UPROPERTY()
+	FString MapAssetName = FString("Default Map Asset Name");
+
 	//第一次加载存档
 	UPROPERTY()
 	bool bFirstTimeLoadIn = true;

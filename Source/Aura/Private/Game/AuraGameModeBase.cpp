@@ -135,7 +135,7 @@ AActor* AAuraGameModeBase::ChoosePlayerStart_Implementation(AController* Player)
 	return nullptr;
 }
 
-void AAuraGameModeBase::SaveWorldState(UWorld* World) const
+void AAuraGameModeBase::SaveWorldState(UWorld* World, const FString& DestinationMapAssetName) const
 {
 	//获取关卡名称
 	FString WorldName = World->GetMapName();
@@ -148,6 +148,11 @@ void AAuraGameModeBase::SaveWorldState(UWorld* World) const
 	//获取存档
 	if(ULoadScreenSaveGame* SaveGame = GetSaveSlotData(AuraGI->LoadSlotName, AuraGI->LoadSlotIndex))
 	{
+		if (DestinationMapAssetName != "")
+		{
+			SaveGame->MapAssetName = DestinationMapAssetName;
+			SaveGame->MapName =GetMapNameFromMapAssetName(DestinationMapAssetName);
+		}
 		if(!SaveGame->HasMap(WorldName))
 		{
 			//如果存档不包含对应关卡内容，将创建一个对应的数据结构体存储
@@ -200,7 +205,7 @@ void AAuraGameModeBase::SaveWorldState(UWorld* World) const
 	}
 }
 
-void AAuraGameModeBase::LoadWorldState(UWorld* World) const
+void AAuraGameModeBase::LoadWorldState(UWorld* World, const FString& DestinationMapAssetName) const
 {
 	//获取关卡名称
 	FString WorldName = World->GetMapName();
@@ -257,6 +262,18 @@ void AAuraGameModeBase::LoadWorldState(UWorld* World) const
 			}			
 		}
 	}
+}
+
+FString AAuraGameModeBase::GetMapNameFromMapAssetName(const FString& MapAssetName) const
+{
+	for (auto& Map : Maps)
+	{
+		if (Map.Value.ToSoftObjectPath().GetAssetName() == MapAssetName)
+		{
+			return Map.Key;
+		}
+	}
+	return FString();
 }
 
 void AAuraGameModeBase::BeginPlay()

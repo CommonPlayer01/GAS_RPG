@@ -13,6 +13,7 @@
 #include "AbilitySystem/Data/LevelUpInfo.h"
 #include "AbilitySystem/Debuff/DebuffNiagaraComponent.h"
 #include "Camera/CameraComponent.h"
+#include "Game/AuraGameInstance.h"
 #include "Game/AuraGameModeBase.h"
 #include "Game/LoadScreenSaveGame.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -174,6 +175,8 @@ void AAuraCharacter::HideMagicCircle_Implementation()
 
 void AAuraCharacter::SaveProgress_Implementation(const FName& CheckpointTag)
 {
+	UAuraGameInstance* AuraGI = Cast<UAuraGameInstance>(GetGameInstance());
+	check(AuraGI);
 	if (AAuraGameModeBase* AuraGameModeBase = Cast<AAuraGameModeBase>(UGameplayStatics::GetGameMode(this)))
 	{
 		//获取存档
@@ -182,6 +185,7 @@ void AAuraCharacter::SaveProgress_Implementation(const FName& CheckpointTag)
 
 		//修改存档数据
 		SaveGameData->PlayerStartTag = CheckpointTag;
+		AuraGI->PlayerStartTag = CheckpointTag;
 
 		//修改玩家相关
 		if(const AAuraPlayerState* AuraPlayerState = Cast<AAuraPlayerState>(GetPlayerState()))
@@ -289,9 +293,7 @@ void AAuraCharacter::LoadProgress() const
 		//获取存档
 		ULoadScreenSaveGame* SaveGameData = GameMode->RetrieveInGameSaveData();
 		if(SaveGameData == nullptr) return;
-
-
-
+		
 		//判断是否为第一次加载存档，如果第一次，属性没有相关内容
 		if(SaveGameData->bFirstTimeLoadIn)
 		{
