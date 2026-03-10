@@ -41,8 +41,15 @@ public:
 
 	
 	/* ICombatInterface战斗接口 */
-		
 	virtual int32 GetPlayerLevel_Implementation() override;
+	virtual void Die() override;
+	/* ICombatInterface战斗接口 结束 */
+	//角色死亡后持续时间，用于表现角色死亡
+	UPROPERTY(EditDefaultsOnly)
+	float DeathTime = 5.f;
+	//声明一个计时器，用于角色死亡后一定时间处理后续逻辑
+	FTimerHandle DeathTimer;
+
 	/* ICombatInterface战斗接口 结束 */
 
 	virtual void OnRep_Stunned() override;

@@ -93,6 +93,7 @@ public:
 
 	virtual void Tick(float DeltaSeconds) override;
 
+	void SetCharacterClass(ECharacterClass InClass) { CharacterClass = InClass; }
 protected:
 	virtual void BeginPlay() override;
 	

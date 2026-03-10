@@ -247,6 +247,27 @@ int32 AAuraCharacter::GetPlayerLevel_Implementation()
 	return PlayerStateBase->GetPlayerLevel();
 }
 
+void AAuraCharacter::Die()
+{
+	Super::Die();
+
+	//创建一个委托，用于绑定委托回调
+	FTimerDelegate DeathTimerDelegate;
+	DeathTimerDelegate.BindLambda([this]()
+	{
+		if(const AAuraGameModeBase* AuraGameMode = Cast<AAuraGameModeBase>(UGameplayStatics::GetGameMode(this)))
+		{
+			AuraGameMode->PlayerDied(this);
+		}
+	});
+
+	//通过定时器触发对应的委托广播
+	GetWorldTimerManager().SetTimer(DeathTimer, DeathTimerDelegate, DeathTime, false);
+
+	//防止相机在玩家角色死亡后跟随移动，将相机固定在世界坐标位置
+	TopDownCameraComponent->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);
+}
+
 void AAuraCharacter::OnRep_Stunned()
 {
 	if (UAuraAbilitySystemComponent* AuraASC = Cast<UAuraAbilitySystemComponent>(AbilitySystemComponent))

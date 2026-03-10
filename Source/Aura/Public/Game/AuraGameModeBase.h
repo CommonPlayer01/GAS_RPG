@@ -90,6 +90,13 @@ public:
 	void LoadWorldState(UWorld* World, const FString& DestinationMapAssetName = FString("")) const;
 	
 	FString GetMapNameFromMapAssetName(const FString& MapAssetName) const;
+
+	/**
+	 * 角色死亡调用函数
+	 * @param DeadCharacter 玩家角色实例
+	 */
+	void PlayerDied(const ACharacter* DeadCharacter) const;
+
 protected:
 	virtual void BeginPlay() override;
 

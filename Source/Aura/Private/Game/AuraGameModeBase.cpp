@@ -7,6 +7,7 @@
 #include "Aura/AuraLogChannels.h"
 #include "Game/AuraGameInstance.h"
 #include "Game/LoadScreenSaveGame.h"
+#include "GameFramework/Character.h"
 #include "GameFramework/PlayerStart.h"
 #include "Interaction/SaveInterface.h"
 #include "Kismet/GameplayStatics.h"
@@ -30,6 +31,7 @@ void AAuraGameModeBase::SaveSlotData(const UMVVM_LoadSlot* LoadSlot, int32 SlotI
 	//设置需要保存的数据
 	LoadScreenSaveGame->PlayerName = LoadSlot->GetPlayerName();
 	LoadScreenSaveGame->MapName = LoadSlot->GetMapName();
+	LoadScreenSaveGame->MapAssetName = LoadSlot->GetMapAssetName();
 	LoadScreenSaveGame->SlotName = LoadSlot->GetSlotName();
 	LoadScreenSaveGame->SlotIndex = SlotIndex;
 	LoadScreenSaveGame->SaveSlotStatus = Taken;
@@ -274,6 +276,16 @@ FString AAuraGameModeBase::GetMapNameFromMapAssetName(const FString& MapAssetNam
 		}
 	}
 	return FString();
+}
+
+void AAuraGameModeBase::PlayerDied(const ACharacter* DeadCharacter) const
+{
+	//获取存档数据
+	const ULoadScreenSaveGame* SaveGame = RetrieveInGameSaveData();
+	if(!IsValid(SaveGame)) return;
+
+	//通过地图命名打开地图
+	UGameplayStatics::OpenLevelBySoftObjectPtr(DeadCharacter, Maps.FindChecked(SaveGame->MapName));
 }
 
 void AAuraGameModeBase::BeginPlay()

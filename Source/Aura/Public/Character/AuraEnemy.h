@@ -62,7 +62,7 @@ public:
 	TObjectPtr<AActor> CombatTarget;
 
 	virtual void StunTagChanged(const FGameplayTag CallbackTag, int32 NewCount) override;
-
+	void SetLevel(int32 InLevel) { Level = InLevel; }
 protected:
 	virtual void BeginPlay() override;
 	virtual void InitAbilityActorInfo() override;

@@ -51,8 +51,15 @@ public:
 	void SetMapName(const FString& InMapName);
 	FString GetMapName() const { return MapName;}
 
+	void SetMapAssetName(const FString& InMapAssetName);
+	FString GetMapAssetName() const { return MapAssetName;}
+
 	void SetPlayerLevel(const int32 InPlayerLevel);
 	int32 GetPlayerLevel() const { return PlayerLevel; };
+
+
+
+	
 
 private:
 	
@@ -66,6 +73,9 @@ private:
 
 	UPROPERTY(BlueprintReadOnly, FieldNotify, Setter, Getter, meta=(AllowPrivateAccess))
 	FString MapName;
+
+	UPROPERTY(BlueprintReadOnly, FieldNotify, Setter, Getter, meta=(AllowPrivateAccess))
+	FString MapAssetName;
 
 	//角色的等级
 	UPROPERTY(BlueprintReadOnly, FieldNotify, Setter, Getter, meta=(AllowPrivateAccess)) //meta=(AllowPrivateAccess)允许设置私有，但在蓝图公开
